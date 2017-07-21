@@ -1,0 +1,397 @@
+<?xml version="1.0"?>
+<robot
+  xmlns:xacro="http://ros.org/wiki/xacro"
+  xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+  name="ceres">
+
+  <xacro:include filename="$(find uos_common_urdf)/common.xacro" />
+  <xacro:include filename="$(find uos_common_urdf)/urdf/imu.gazebo.urdf.xacro" />
+  <xacro:include filename="$(find sick_tim)/urdf/sick_tim.urdf.xacro" />
+  
+  <xacro:property name="M_PI" value="3.14159265359"/>
+  
+  <xacro:property name="imu_stdev" value="0.00017" />
+  
+  <xacro:property name="body_height" value="0.15"/>
+  <xacro:property name="body_length" value="0.38"/>
+  <xacro:property name="body_width" value="0.32"/>
+  
+  <xacro:property name="axis_front" value="0.14"/>
+  <xacro:property name="axis_back" value="-0.14"/>
+  
+  <xacro:property name="wheel_thickness" value="0.085"/>
+  <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.015}"/>
+  <xacro:property name="wheel_radius" value="0.135"/>
+  <xacro:property name="axis_height" value="-0.03"/>
+  <xacro:property name="axis_left" value="${-body_width/2 - wheel_body_offset}"/>
+  <xacro:property name="axis_right" value="${body_width/2 + wheel_body_offset}"/>
+  <xacro:property name="axis_length" value="${body_width + 2 * wheel_body_offset}" />
+  <xacro:property name="turning_adaptation" value="0.95" />
+
+  <xacro:property name="bearing_width" value="0.05"/>
+  <xacro:property name="bearing_height" value="0.09"/>
+  <xacro:property name="bearing_thickness" value="0.01"/>
+
+  <xacro:property name="body_mass" value="40.0"/>
+  <xacro:property name="wheel_mass" value="3.0"/>
+
+  <xacro:property name="imu_width" value="0.036"/>
+  <xacro:property name="imu_length" value="0.038"/>
+  <xacro:property name="imu_height" value="0.012"/>
+
+  <xacro:property name="imu_offset_x" value="0"/>
+  <xacro:property name="imu_offset_y" value="0"/>
+  <xacro:property name="imu_offset_z" value="${- body_height/2 + 0.005 + 0.007}"/>
+  
+  <xacro:property name="em_body_length" value="0.11"/>
+  <xacro:property name="em_body_width" value="0.04"/>
+  <xacro:property name="em_body_height" value="0.03"/>
+  
+  <xacro:property name="em_button_radius" value="0.0125"/>
+  <xacro:property name="em_button_depth" value="0.02" />
+ 
+  <link name="base_footprint"/>
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--mesh filename="package://pluto_description/meshes/pluto_base.stl"/-->
+        <box size="${body_length} ${body_width} ${body_height}"/>
+      </geometry>
+      <material name="silver" >
+        <color rgba="0.5 0.5 0.5 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="${body_length} ${body_width} ${body_height}"/>
+        <!--mesh filename="package://pluto_description/meshes/pluto_base_collision.stl"/-->
+      </geometry>
+    </collision>
+    <xacro:box_inertial
+      x="${body_length}"
+      y="${body_width}"
+      z="${body_height}"
+      mass="${body_mass}"/>
+  </link>
+  
+  <joint name="base_footprint_to_base_joint" type="fixed">
+    <!-- origin xyz="0 0 0.2" rpy="0 ${-M_PI/18.0} 0" /-->
+    <origin xyz="0 0 ${wheel_radius - axis_height}" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint>
+  
+  <!--Wheel Macro-->
+
+  <xacro:macro name="wheel" params="name parent xyz">
+    <link name="${name}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <!--mesh filename="package://pluto_description/meshes/pluto_wheel.stl"/-->
+	  <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+        </geometry>
+        <material name="black" >
+          <color rgba="0 0 0 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+	  <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+          <!-- mesh filename="package://pluto_description/meshes/pluto_wheel_collision.stl"/-->
+        </geometry>
+      </collision>
+      <xacro:cylinder_inertial
+        radius="${wheel_radius}"
+        length="${wheel_thickness}"
+        mass="${wheel_mass}" />
+    </link>
+
+    <joint name="${name}_joint" type="fixed">
+      <origin xyz="${xyz}" rpy="0 0 0"/>
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <gazebo reference="${name}_link">
+      <mu1>1</mu1>
+      <mu2>1</mu2>
+      <material>Gazebo/Black</material>
+      <kp>10000000</kp>
+      <kd>10</kd>
+      <selfCollide>false</selfCollide>
+    </gazebo>
+  </xacro:macro>
+  
+  <xacro:macro name="box_for_joint" params="name o_x o_y o_z r_x r_y r_z r g b color length height width">
+    <link name="${name}_link">
+      <visual>
+        <origin xyz="${o_x} ${o_y} ${o_z}" rpy="${r_x} ${r_y} ${r_z}" />
+        <geometry>
+          <box size="${length} ${width} ${height}" />
+        </geometry>
+        <material name="${color}">
+          <color rgba="${r} ${g} ${b} 1"/>
+        </material>
+      </visual>
+    </link>
+  </xacro:macro>  
+
+  <xacro:wheel
+    name="left_front_wheel"
+    parent="base_link"
+    xyz="${axis_front} ${axis_left} ${axis_height}" />
+
+  <xacro:wheel
+    name="left_rear_wheel"
+    parent="base_link"
+    xyz="${axis_back} ${axis_left} ${axis_height}" />
+  
+  <xacro:wheel
+    name="right_front_wheel"
+    parent="base_link"
+    xyz="${axis_front} ${axis_right} ${axis_height}" />
+  
+  <xacro:wheel
+    name="right_rear_wheel"
+    parent="base_link"
+    xyz="${axis_back} ${axis_right} ${axis_height}" />
+  
+  <xacro:sick_tim551
+    name="laser"
+    ros_topic="/laser" />
+  
+  <xacro:box_for_joint
+    name="pico_flexx_holder1"
+    r_x="0"
+    r_y="0"
+    r_z="0"
+    o_x="0"
+    o_y="0"
+    o_z="0"
+    color="silver"
+    r="0.5"
+    g="0.5"
+    b="0.5"
+    length="0.015"
+    width="0.02"
+    height="0.02" />
+  
+  <xacro:box_for_joint
+    name="pico_flexx_holder2"
+    r_x="0"
+    r_y="0"
+    r_z="0"
+    o_x="0"
+    o_y="0"
+    o_z="0"
+    color="silver"
+    r="0.5"
+    g="0.5"
+    b="0.5"
+    length="0.015"
+    width="0.02"
+    height="0.02" />
+  
+  <xacro:box_for_joint
+    name="pico_flexx_model"
+    r_x="0"
+    r_y="0"
+    r_z="0"
+    o_x="0"
+    o_y="0"
+    o_z="0"
+    color="black"
+    r="0"
+    g="0"
+    b="0"
+    length="0.01"
+    width="0.067"
+    height="0.02"/>
+
+ <!-- 
+  <xacro:box_for_joint
+    name="pico_flexx_bottom_plate"
+    r_x="0"
+    r_y="0"
+    r_z="0"
+    color="silver"
+    r="0.5"
+    g="0.5"
+    b="0.5"
+    length="0.01"
+    width="0.065"
+    height="0.002"/>
+  /-->
+
+  <link name="pico_flexx_optical_frame" type="fixed">
+    <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.004" radius="0.0035"/>
+        </geometry>
+        <material name="white">
+          <color rgba="255 255 255 1"/>
+        </material>
+    </visual>
+  </link>
+
+  <link name="pico_flexx_axis" type="fixed">
+    <visual>
+        <origin xyz="0 0 0" rpy="0 ${M_PI/2} ${M_PI/2}"/>
+        <geometry>
+          <cylinder length="0.02" radius="0.01"/>
+        </geometry>
+        <material name="silver">
+          <color rgba="0.6 0.6 0.5 1"/>
+        </material>
+    </visual>
+  </link>
+ 
+  <joint name="pico_flexx_holder_to_base_joint" type="fixed">
+   <parent link="base_link" />
+   <child link="pico_flexx_holder1_link"/>
+   <origin xyz="${body_length/2} 0 ${body_height/2 - 0.01}"/>
+  </joint>
+  
+  <joint name="pico_flexx_axis_to_pico_flexx_holder" type="continuous">
+    <parent link="pico_flexx_holder1_link"/>
+    <child link="pico_flexx_axis"/>
+    <origin xyz="0.01 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+  <joint name="pico_flexx" type="fixed">
+    <parent link="pico_flexx_holder2_link" />
+    <child link="pico_flexx_model_link" />
+    <origin xyz="0.005 0 0" />
+  </joint>
+
+  <joint name="pico_flexx_joint" type="fixed">
+    <parent link="pico_flexx_axis"/>
+    <child link="pico_flexx_holder2_link"/>
+    <origin xyz="0.01 0 0"/>
+  </joint>
+  
+  <joint name="sick_to_base_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="laser_mount_link" />
+    <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2 - 0.015}"/>
+  </joint>
+
+  <joint name="pico_flexx_lense" type="fixed">
+    <parent link="pico_flexx_model_link" />
+    <child link="pico_flexx_optical_frame" />
+    <origin xyz="0.005 -0.009 0.002" rpy="${M_PI/2} 0 ${M_PI/2}"/>
+  </joint>
+  
+  <link name="imu">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="${imu_length} ${imu_width} ${imu_height}"/>
+      </geometry>
+      <material name="white" >
+        <color rgba="0.8 0.8 0.8 1" />
+      </material>
+    </visual>
+  </link>
+  
+  <link name="em_body">
+    <visual>
+      <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}" />
+      <geometry>
+        <box size="${em_body_length} ${em_body_width} ${em_body_height}"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="255 255 0 1" />
+      </material>
+    </visual>
+  </link>
+ 
+  <link name="em_button">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
+      <geometry>
+        <cylinder length="${em_button_depth}" radius="${em_button_radius}"/>
+      </geometry>
+      <material name="red">
+        <color rgba="255 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+ 
+  <joint name="em_body_to_base_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="em_body" />
+    <origin
+      xyz=" ${-body_length/2}
+            0.03
+           -0.05
+          " />
+  </joint>
+  
+  <joint name="em_button_to_em_body_joint" type="fixed">
+    <parent link="em_body" />
+    <child link="em_button" />
+    <origin
+      xyz=" ${-em_button_depth}
+            -0.02
+            0 
+          " />
+  </joint>
+  
+  <joint name="imu_to_base_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu" />
+    <origin
+      xyz=" ${imu_offset_x}
+            ${imu_offset_y}
+            ${imu_offset_z}"
+      rpy="${M_PI} 0 ${M_PI/2.0}" />
+  </joint>
+  
+  <!-- inertial measurement unit for gazebo -->
+  <xacro:imu_gazebo link="imu" imu_topic="imu/data" update_rate="100.0" stdev="${imu_stdev}" />
+
+  <gazebo>
+    <plugin name="volksbot_diffdrive" filename="libgazebo_ros_diffdrive_uos.so">
+      <alwaysOn>true</alwaysOn>
+      <cmd_vel_topic_name>cmd_vel</cmd_vel_topic_name>
+      <odom_topic_name>odom</odom_topic_name>
+      <joint_states_topic_name>joint_states</joint_states_topic_name>
+      <left_front_wheel_joint>left_front_wheel_joint</left_front_wheel_joint>
+      <left_middle_wheel_joint>left_middle_wheel_joint</left_middle_wheel_joint>
+      <left_rear_wheel_joint>left_rear_wheel_joint</left_rear_wheel_joint>
+      <right_front_wheel_joint>right_front_wheel_joint</right_front_wheel_joint>
+      <right_middle_wheel_joint>right_middle_wheel_joint</right_middle_wheel_joint>
+      <right_rear_wheel_joint>right_rear_wheel_joint</right_rear_wheel_joint>
+      <wheel_separation>${axis_length}</wheel_separation>
+      <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+      <turning_adaptation>${turning_adaptation}</turning_adaptation>
+      <torque>4.0</torque>
+      <max_velocity>1.0</max_velocity>
+      <updateRate>40.0</updateRate>
+    </plugin>
+  </gazebo>
+
+  <!-- publish ground truth for pose of base_footprint -->
+  <gazebo>
+    <plugin name="base_footprint_controller" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>30.0</updateRate>
+      <bodyName>base_footprint</bodyName>
+      <topicName>base_footprint_pose_ground_truth</topicName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <interface:position name="base_footprint_p3d_position_iface" />
+    </plugin>
+  </gazebo>
+
+</robot>

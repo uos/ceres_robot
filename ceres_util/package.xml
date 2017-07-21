@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>ceres_util</name>
+  <version>1.0.0</version>
+  <description>The ceres_util package</description>
+
+  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
+  <maintainer email="gjulian@uos.de">Julian Gaal</maintainer>
+  <maintainer email="chbroecker@uos.de">Christopher Broecker</maintainer>
+
+  <license>BSD</license>
+
+  <author email="gjulian@uos.de">Julian Gaal</author>
+  <author email="chbroecker@uos.de">Christopher Broecker</author>
+  <author email="spuetz@uos.de">Sebastian Pütz</author>
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

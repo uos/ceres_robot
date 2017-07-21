@@ -1,0 +1,25 @@
+<launch>
+  ### Upload Pluto to parameter server
+  <include file="$(find ceres_description)/launch/upload_ceres.launch"/>      	
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="false" />
+  </node>
+
+  ### Roboter Setup
+  <arg name="use_volksbot_driver" default="true" />
+  <arg name="use_sick_tim" default="true" />
+  <arg name="use_imu" default="true" />
+  <arg name="use_pico_flexx" default="true" />
+  <arg name="use_ekf" default="true" />
+
+  ### Sensors
+  <include if="$(arg use_volksbot_driver)" file="$(find ceres_bringup)/launch/volksbot.launch"/>
+  <include if="$(arg use_sick_tim)" file="$(find ceres_bringup)/launch/sick_tim.launch"/>
+  <include if="$(arg use_imu)" file="$(find ceres_bringup)/launch/imu_single_nodes.launch"/>
+  <include if="$(arg use_pico_flexx)" file="$(find ceres_bringup)/launch/pico_flexx_driver.launch"/>
+
+  ### EKF
+  <include if="$(arg use_ekf)" file="$(find ceres_bringup)/launch/ekf.launch"/>
+
+</launch>

@@ -1,0 +1,75 @@
+ceres(){
+  . ${CERES_WORKSPACE}/devel/setup.bash
+  cd ${CERES_WORKSPACE}
+}
+
+# tmux startup file.
+# If you want to perform certain actions on startup
+# just append these commands to the end of the lines
+# in order to have them executed in the session in
+# question. Already open session are not opened again
+# of course.
+cmux() {
+  tmux new -ds roscore
+  tmux send -t roscore ceres-host ENTER
+  tmux send -t roscore roscore ENTER
+  tmux new -ds bringup
+  tmux send -t bringup ceres-host ENTER
+  tmux new -ds work
+  tmux send -t work ceres-host ENTER
+  tmux new -ds debug
+  tmux send -t debug ceres-host ENTER
+}
+
+
+ceres-host(){
+  export ROS_HOSTNAME=${HOSTNAME}.funky.uni-osnabrueck.de
+  export ROS_MASTER_URI="http://${ROS_HOSTNAME}:11311"
+}
+
+ceres-client(){
+  if [ -n "$1" ]
+  then
+   # export ROS_HOSTNAME=${HOSTNAME}.informatik.uni-osnabrueck.de
+    export ROS_MASTER_URI="http://$1.funky.uni-osnabrueck.de:11311"
+  else
+    echo "Wrooong! Use the name of the robot as parameter!"
+  fi
+}
+
+ceres-client-ip(){
+  export ROS_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
+  if [ -n "$1" ]
+  then
+    export ROS_MASTER_URI="http://$1.funky.uni-osnabrueck.de:11311"
+  else
+    echo "Wrooong! Use the name of the robot as parameter!"
+  fi
+}
+
+ssh-aquana(){
+  ceres-ssh aquana
+}
+ssh-flamara(){
+  ceres-ssh flamara
+}
+ssh-evoli(){
+  ceres-ssh evoli
+}
+ssh-blitza(){
+  ceres-ssh blitza
+}
+ssh-zapdos(){
+  ceres-ssh zapdos
+}
+
+# ssh onto the different ceres robots
+ceres-ssh(){
+  if [ -n "$1" ]
+  then
+    ssh robot@$1.funky.uos.de
+  else
+    echo "Wrooong! Use the name of the robot as parameter!"
+  fi
+}
+

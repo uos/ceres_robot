@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="volksbot" pkg="volksbot_driver" type="volksbot" respawn="false" output="screen">
+    <param name="wheel_radius" type="double" value="0.135" />
+    <param name="axis_length" type="double" value="0.435" />
+    <!-- default values: -->
+    <!--
+      <param name="wheel_radius" type="double" value="0.0985" />
+      <param name="axis_length" type="double" value="0.41" />
+      <param name="gear_ratio" type="int" value="74" />
+      <param name="turning_adaptation" type="double" value="0.95" />
+      <param name="x_stddev" type="double" value="0.002" />
+      <param name="rotation_stddev" type="double" value="0.017" />
+      <param name="cov_xy" type="double" value="0.0" />
+      <param name="cov_xrotation" type="double" value="0.0" />
+      <param name="cov_yrotation" type="double" value="0.0" />
+      <param name="publish_tf" type="bool" value="False" />
+    -->
+  </node>
+</launch>

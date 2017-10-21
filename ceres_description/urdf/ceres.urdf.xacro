@@ -25,8 +25,8 @@
   <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.015}"/>
   <xacro:property name="wheel_radius" value="0.135"/>
   <xacro:property name="axis_height" value="-0.03"/>
-  <xacro:property name="axis_left" value="${-body_width/2 - wheel_body_offset}"/>
-  <xacro:property name="axis_right" value="${body_width/2 + wheel_body_offset}"/>
+  <xacro:property name="axis_right" value="${-body_width/2 - wheel_body_offset}"/>
+  <xacro:property name="axis_left" value="${body_width/2 + wheel_body_offset}"/>
   <xacro:property name="axis_length" value="${body_width + 2 * wheel_body_offset}" />
   <xacro:property name="turning_adaptation" value="0.95" />
 
@@ -57,7 +57,6 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <!--mesh filename="package://pluto_description/meshes/pluto_base.stl"/-->
         <box size="${body_length} ${body_width} ${body_height}"/>
       </geometry>
       <material name="silver" >
@@ -68,7 +67,6 @@
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <box size="${body_length} ${body_width} ${body_height}"/>
-        <!--mesh filename="package://pluto_description/meshes/pluto_base_collision.stl"/-->
       </geometry>
     </collision>
     <xacro:box_inertial
@@ -79,31 +77,27 @@
   </link>
   
   <joint name="base_footprint_to_base_joint" type="fixed">
-    <!-- origin xyz="0 0 0.2" rpy="0 ${-M_PI/18.0} 0" /-->
     <origin xyz="0 0 ${wheel_radius - axis_height}" rpy="0 0 0" />
     <parent link="base_footprint"/>
     <child link="base_link" />
   </joint>
   
   <!--Wheel Macro-->
-
   <xacro:macro name="wheel" params="name parent xyz">
     <link name="${name}_link">
       <visual>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
         <geometry>
-          <!--mesh filename="package://pluto_description/meshes/pluto_wheel.stl"/-->
-	  <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
         </geometry>
         <material name="black" >
           <color rgba="0 0 0 1" />
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
         <geometry>
-	  <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
-          <!-- mesh filename="package://pluto_description/meshes/pluto_wheel_collision.stl"/-->
+          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
         </geometry>
       </collision>
       <xacro:cylinder_inertial
@@ -112,7 +106,7 @@
         mass="${wheel_mass}" />
     </link>
 
-    <joint name="${name}_joint" type="fixed">
+    <joint name="${name}_joint" type="continuous">
       <origin xyz="${xyz}" rpy="0 0 0"/>
       <parent link="${parent}"/>
       <child link="${name}_link"/>
@@ -120,14 +114,15 @@
     </joint>
 
     <gazebo reference="${name}_link">
-      <mu1>1</mu1>
-      <mu2>1</mu2>
+      <mu1>0.1</mu1>
+      <mu2>0.1</mu2>
       <material>Gazebo/Black</material>
-      <kp>10000000</kp>
+      <kp>1000000</kp>
       <kd>10</kd>
       <selfCollide>false</selfCollide>
     </gazebo>
   </xacro:macro>
+
   
   <xacro:macro name="box_for_joint" params="name o_x o_y o_z r_x r_y r_z r g b color length height width">
     <link name="${name}_link">
@@ -260,7 +255,7 @@
    <origin xyz="${body_length/2} 0 ${body_height/2 - 0.01}"/>
   </joint>
   
-  <joint name="pico_flexx_axis_to_pico_flexx_holder" type="continuous">
+  <joint name="pico_flexx_angle" type="continuous">
     <parent link="pico_flexx_holder1_link"/>
     <child link="pico_flexx_axis"/>
     <origin xyz="0.01 0 0"/>
@@ -367,10 +362,8 @@
       <odom_topic_name>odom</odom_topic_name>
       <joint_states_topic_name>joint_states</joint_states_topic_name>
       <left_front_wheel_joint>left_front_wheel_joint</left_front_wheel_joint>
-      <left_middle_wheel_joint>left_middle_wheel_joint</left_middle_wheel_joint>
       <left_rear_wheel_joint>left_rear_wheel_joint</left_rear_wheel_joint>
       <right_front_wheel_joint>right_front_wheel_joint</right_front_wheel_joint>
-      <right_middle_wheel_joint>right_middle_wheel_joint</right_middle_wheel_joint>
       <right_rear_wheel_joint>right_rear_wheel_joint</right_rear_wheel_joint>
       <wheel_separation>${axis_length}</wheel_separation>
       <wheel_diameter>${2*wheel_radius}</wheel_diameter>

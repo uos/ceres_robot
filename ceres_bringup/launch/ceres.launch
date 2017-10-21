@@ -1,9 +1,15 @@
 <launch>
+  <arg name="jsp_gui" default="false"/>
   ### Upload Pluto to parameter server
   <include file="$(find ceres_description)/launch/upload_ceres.launch"/>      	
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="false" />
+  <!-- Joint State Publisher -->
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+    <param name="use_gui" value="$(arg jsp_gui)" />
+    <rosparam>
+      zeros:
+        pico_flex_angle : 0.0
+    </rosparam>
   </node>
 
   ### Roboter Setup

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <name>ceres_gazebo</name>
+  <version>1.0.0</version>
+  <description>
+    Launch files for starting up Ceres in the Gazebo simulator.
+  </description>
+  <author email="hjanott@uos.de">Hannes Janott</author>
+  <author email="spuetz@uos.de">Sebastian Pütz</author>
+  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
+  <license>BSD</license>
+
+  <run_depend>ceres_description</run_depend>
+  <run_depend>controller_manager</run_depend>
+  <run_depend>diffdrive_gazebo_plugin</run_depend>
+  <run_depend>gazebo_ros_control</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>uos_gazebo_worlds</run_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find ceres_description)/launch/upload_ceres.launch"/>
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_ceres_model" pkg="gazebo_ros" type="spawn_model"
+    args="$(optenv ROBOT_INITIAL_POSE) -unpause -urdf -param robot_description
+    -model ceres" respawn="false" output="screen"/>
+</launch>

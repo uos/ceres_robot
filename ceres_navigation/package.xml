@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>ceres_navigation</name>
+  <version>0.5.0</version>
+  <description>Sets up the navigation stack for ceres using Move Base Flex.</description>
+
+  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
+
+  <license>BSD</license>
+  <author email="spuetz@uos.de">Sebastian Pütz</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>ceres_bringup</run_depend>
+  <run_depend>ceres_description</run_depend>
+  <run_depend>move_base_flex</run_depend>
+  <run_depend>move_base</run_depend>
+</package>

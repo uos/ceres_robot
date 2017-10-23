@@ -1,0 +1,28 @@
+local_costmap:
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  static_map: false
+  rolling_window: true
+  width: 6.0
+  height: 6.0
+  resolution: 0.05
+  plugins: 
+  - name: static_map
+    type: "costmap_2d::StaticLayer"
+  - name: obstacles
+    type: "costmap_2d::VoxelLayer"
+  - name: inflation
+    type: "costmap_2d::InflationLayer"
+  
+  obstacles:
+    # uncomment picco_flexx to use it for calculatig the costmaps
+    # TODO: filtering picco_flexx to avoid noise in costmap
+    observation_sources: sick_tim #pico_flexx
+    sick_tim: {sensor_frame: laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+    #pico_flexx: {sensor_frame: pico_flexx_optical_frame, data_type: LaserScan, topic: pico_flexx_scan, marking: true, clearing: true}
+    max_obstacle_height: 0.4
+    z_resolution: 0.05
+    z_voxels: 10
+    publish_voxel_map: true
+  inflation:
+    inflation_radius: 0.25

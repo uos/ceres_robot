@@ -11,7 +11,7 @@
   <include if="$(arg amcl)" file="$(find ceres_navigation)/launch/amcl.launch" />
 
   <!-- Gmapping -->
-  <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping" />
+  <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping.launch" />
 
   <!-- Move Base Flex -->
   <node pkg="move_base_flex" type="mbf_2d_nav" respawn="false" name="move_base_flex" output="screen"> 

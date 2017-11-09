@@ -11,7 +11,7 @@
   <include if="$(arg amcl)" file="$(find ceres_navigation)/launch/amcl.launch" />
 
   <!-- Gmapping -->
-  <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping" />
+  <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping.launch" />
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find ceres_navigation)/config/global_planner.yaml" command="load" />

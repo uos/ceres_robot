@@ -1,24 +1,4 @@
 <launch>
-  <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find ceres_navigation)/config/wachsbleiche_6_floor.yaml"/>
-  
-  <!--- Run pointcloud_to_laserscan -->
-  <node name="pointcloud_to_laserscan" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node">
-    <remap from="scan" to="pico_flexx_scan"/>
-    <remap from="cloud_in" to="/cloud_filtered"/>
-    <param name="concurrency_level" value="0"/>
-    <param name="range_min" value="0.05"/>
-    <param name="range_max" value="3.5"/>
-    <param name="min_height" value="-0.15"/>
-    <param name="max_height" value="0.2"/>
-    <param name="target_frame" value="laser"/>
-  </node>
-  
-  <!--- Run Cloudfilter -->
-  <node name="cloudfilter" pkg="cloud_filter" type="cloudfilter_node">
-     <remap from="/cloud" to="/pico_flexx/points" />
-  </node>
-
   <!--- Run AMCL -->
   <node pkg="amcl" type="amcl" name="amcl">
     <!-- Publish scans from best pose at a max of 10 Hz -->
@@ -69,6 +49,5 @@
   
   <!-- Run SMACH state-machine -->
   <node pkg="ceres_navigation" type="mbf_state_machine.py" name="mbf_state_machine" output="screen"/>
-
     
 </launch>

@@ -160,7 +160,7 @@
   
   <xacro:sick_tim551
     name="laser"
-    ros_topic="/laser" />
+    ros_topic="/scan" />
   
   <xacro:box_for_joint
     name="pico_flexx_holder1"

@@ -1,0 +1,5 @@
+<launch>
+  <arg name="map" default="$(find ceres_navigation)/maps/wachsbleiche_6_floor.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+</launch>
+

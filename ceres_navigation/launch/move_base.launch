@@ -1,57 +1,17 @@
 <launch>
-  <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find ceres_navigation)/config/wachsbleiche_6_floor.yaml"/>
-  
-  <!--- Run pointcloud_to_laserscan -->
-  <node name="pointcloud_to_laserscan" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node">
-    <remap from="scan" to="pico_flexx_scan"/>
-    <remap from="cloud_in" to="/cloud_filtered"/>
-    <param name="concurrency_level" value="0"/>
-    <param name="range_min" value="0.05"/>
-    <param name="range_max" value="3.5"/>
-    <param name="min_height" value="-0.15"/>
-    <param name="max_height" value="0.2"/>
-    <param name="target_frame" value="laser"/>
-  </node>
+  <arg name="amcl" default="true" />
+  <arg name="map_server" default="true" />
+  <arg name="gmapping" default="false" />
+  <arg name="rviz" default="false" />
 
-  <!--- Run AMCL -->
-  <node pkg="amcl" type="amcl" name="amcl">
-    <!-- Publish scans from best pose at a max of 10 Hz -->
-    <param name="base_frame_id" value="base_footprint"/>
-    <param name="odom_model_type" value="omni"/>
-    <param name="odom_alpha5" value="0.1"/>
-    <param name="transform_tolerance" value="0.2" />
-    <param name="gui_publish_rate" value="10.0"/>
-    <param name="laser_max_beams" value="30"/>
-    <param name="min_particles" value="500"/>
-    <param name="max_particles" value="5000"/>
-    <param name="kld_err" value="0.05"/>
-    <param name="kld_z" value="0.99"/>
-    <param name="odom_alpha1" value="0.2"/>
-    <param name="odom_alpha2" value="0.2"/>
-    <!-- translation std dev, m -->
-    <param name="odom_alpha3" value="0.8"/>
-    <param name="odom_alpha4" value="0.2"/>
-    <param name="laser_z_hit" value="0.5"/>
-    <param name="laser_z_short" value="0.05"/>
-    <param name="laser_z_max" value="0.05"/>
-    <param name="laser_z_rand" value="0.5"/>
-    <param name="laser_sigma_hit" value="0.2"/>
-    <param name="laser_lambda_short" value="0.1"/>
-    <param name="laser_lambda_short" value="0.1"/>
-    <param name="laser_model_type" value="likelihood_field"/>
-    <!-- <param name="laser_model_type" value="beam"/> -->
-    <param name="laser_likelihood_max_dist" value="2.0"/>
-    <param name="update_min_d" value="0.2"/>
-    <param name="update_min_a" value="0.5"/>
-    <param name="odom_frame_id" value="odom_combined"/>
-    <param name="resample_interval" value="1"/>
-    <param name="recovery_alpha_slow" value="0.0"/>
-    <param name="recovery_alpha_fast" value="0.0"/>
-    <!--param name="use_map_topic" value="true"/-->
-    <!--param name="first_map_only" value="true"/-->
-    <param name="global_frame" value="map"/>
-  </node>
+  <!-- Map Server -->
+  <include if="$(arg map_server)" file="$(find ceres_navigation)/launch/map_server.launch" />
+
+  <!-- Run AMCL -->
+  <include if="$(arg amcl)" file="$(find ceres_navigation)/launch/amcl.launch" />
+
+  <!-- Gmapping -->
+  <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping" />
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find ceres_navigation)/config/global_planner.yaml" command="load" />
@@ -61,4 +21,8 @@
     <rosparam file="$(find ceres_navigation)/config/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/local_costmap_params.yaml" command="load" />
   </node>
+
+  <!-- RViz with config -->
+  <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find ceres_navigation)/rviz/move_base.rviz" />
+
 </launch>

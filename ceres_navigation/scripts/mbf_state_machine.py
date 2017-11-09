@@ -15,7 +15,7 @@ def get_path_goal_cb(userdata, goal):
     goal.use_start_pose = False
     goal.target_pose = userdata.target_pose
     goal.waypoints = []
-    goal.tolerance = 0.1
+    goal.goal_tolerance = 0.1
 
 def get_path_result_cb(userdata, status, result):
     userdata.path = result.path

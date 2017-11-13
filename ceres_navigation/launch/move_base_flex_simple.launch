@@ -5,7 +5,7 @@
   <arg name="rviz" default="false" />
 
   <!-- Map Server -->
-  <include if="$(arg mapserver)" file="$(find ceres_navigation)/launch/map_server.launch">
+  <include if="$(arg mapserver)" file="$(find ceres_navigation)/launch/map_server.launch" />
 
   <!-- Run AMCL -->
   <include if="$(arg amcl)" file="$(find ceres_navigation)/launch/amcl.launch" />
@@ -27,7 +27,7 @@
   </node>
   
   <!-- SMACH Navigation State Machine -->
-  <node pkg="ceres_navigation" type="mbf_state_machine.py" name="mbf_state_machine" output="screen"/>
+  <node pkg="ceres_navigation" type="mbf_move_base_action.py" name="mbf_move_base_action" output="screen"/>
 
   <!-- RViz with config -->
   <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find ceres_navigation)/rviz/move_base_flex.rviz" />

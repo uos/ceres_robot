@@ -88,18 +88,17 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
         <geometry>
-          <mesh filename="package://ceres_description/meshes/wheel_new.stl"/>
-          <!--cylinder length="${wheel_thickness}" radius="${wheel_radius}"/-->
+          <mesh filename="package://ceres_description/meshes/wheel.stl"/>
         </geometry>
         <material name="black" >
           <color rgba="0 0 0 1" />
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
+        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
         <geometry>
-          <mesh filename="package://ceres_description/meshes/wheel_new.stl"/>
-          <!--cylinder length="${wheel_thickness}" radius="${wheel_radius}"/-->
+          <!-- mesh filename="package://ceres_description/meshes/wheel.stl"/-->
+          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
         </geometry>
       </collision>
       <xacro:cylinder_inertial
@@ -358,21 +357,19 @@
   <xacro:imu_gazebo link="imu" imu_topic="imu/data" update_rate="100.0" stdev="${imu_stdev}" />
 
   <gazebo>
-    <plugin name="volksbot_diffdrive" filename="libgazebo_ros_diffdrive_uos.so">
-      <alwaysOn>true</alwaysOn>
-      <cmd_vel_topic_name>cmd_vel</cmd_vel_topic_name>
-      <odom_topic_name>odom</odom_topic_name>
-      <joint_states_topic_name>joint_states</joint_states_topic_name>
-      <left_front_wheel_joint>left_front_wheel_joint</left_front_wheel_joint>
-      <left_rear_wheel_joint>left_rear_wheel_joint</left_rear_wheel_joint>
-      <right_front_wheel_joint>right_front_wheel_joint</right_front_wheel_joint>
-      <right_rear_wheel_joint>right_rear_wheel_joint</right_rear_wheel_joint>
-      <wheel_separation>${axis_length}</wheel_separation>
-      <wheel_diameter>${2*wheel_radius}</wheel_diameter>
-      <turning_adaptation>${turning_adaptation}</turning_adaptation>
-      <torque>4.0</torque>
-      <max_velocity>1.0</max_velocity>
-      <updateRate>40.0</updateRate>
+    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+      <updateRate>100.0</updateRate>
+      <robotNamespace>/</robotNamespace>
+      <leftFrontJoint>left_front_wheel_joint</leftFrontJoint>
+      <rightFrontJoint>right_front_wheel_joint</rightFrontJoint>
+      <leftRearJoint>left_rear_wheel_joint</leftRearJoint>
+      <rightRearJoint>right_rear_wheel_joint</rightRearJoint>
+      <wheelSeparation>${axis_length}</wheelSeparation>
+      <wheelDiameter>${2*wheel_radius}</wheelDiameter>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <torque>20</torque>
+      <topicName>cmd_vel</topicName>
+      <broadcastTF>false</broadcastTF>
     </plugin>
   </gazebo>
 

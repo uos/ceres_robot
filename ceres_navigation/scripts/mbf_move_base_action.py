@@ -70,7 +70,7 @@ def main():
                                    result_cb=move_base_result_cb
                                ),
                                transitions={
-                                   'success': 'succeeded',
+                                   'success': 'WAIT_FOR_GOAL',
                                    'general_failure': 'WAIT_FOR_GOAL',
                                    'plan_failure': 'WAIT_FOR_GOAL',
                                    'ctrl_failure': 'WAIT_FOR_GOAL',

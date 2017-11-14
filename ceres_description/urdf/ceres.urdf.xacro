@@ -86,18 +86,20 @@
   <xacro:macro name="wheel" params="name parent xyz">
     <link name="${name}_link">
       <visual>
-        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
         <geometry>
-          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+          <mesh filename="package://ceres_description/meshes/wheel_new.stl"/>
+          <!--cylinder length="${wheel_thickness}" radius="${wheel_radius}"/-->
         </geometry>
         <material name="black" >
           <color rgba="0 0 0 1" />
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
         <geometry>
-          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+          <mesh filename="package://ceres_description/meshes/wheel_new.stl"/>
+          <!--cylinder length="${wheel_thickness}" radius="${wheel_radius}"/-->
         </geometry>
       </collision>
       <xacro:cylinder_inertial
@@ -114,8 +116,8 @@
     </joint>
 
     <gazebo reference="${name}_link">
-      <mu1>0.1</mu1>
-      <mu2>0.1</mu2>
+      <mu1>0.8</mu1>
+      <mu2>0.8</mu2>
       <material>Gazebo/Black</material>
       <kp>1000000</kp>
       <kd>10</kd>

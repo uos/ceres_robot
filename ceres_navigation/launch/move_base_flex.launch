@@ -5,7 +5,7 @@
   <arg name="rviz" default="false" />
 
   <!-- Map Server -->
-  <include if="$(arg mapserver)" file="$(find ceres_navigation)/launch/map_server.launch">
+  <include if="$(arg mapserver)" file="$(find ceres_navigation)/launch/map_server.launch" />
 
   <!-- Run AMCL -->
   <include if="$(arg amcl)" file="$(find ceres_navigation)/launch/amcl.launch" />

@@ -2,14 +2,14 @@
 import rospy
 import smach
 import smach_ros
-from move_base_flex_msgs.msg import ExePathAction
-from move_base_flex_msgs.msg import ExePathResult
+from mbf_msgs.msg import ExePathAction
+from mbf_msgs.msg import ExePathResult
 
-from move_base_flex_msgs.msg import GetPathAction
-from move_base_flex_msgs.msg import GetPathResult
+from mbf_msgs.msg import GetPathAction
+from mbf_msgs.msg import GetPathResult
 
-from move_base_flex_msgs.msg import RecoveryAction
-from move_base_flex_msgs.msg import RecoveryResult
+from mbf_msgs.msg import RecoveryAction
+from mbf_msgs.msg import RecoveryResult
 
 from wait_for_goal import WaitForGoal
 

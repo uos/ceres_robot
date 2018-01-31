@@ -1,4 +1,6 @@
-global_planner: "global_planner/GlobalPlanner"
+planners: 
+  - name: 'planner'
+    type: 'global_planner/GlobalPlanner'
 allow_unknown: false
 default_tolerance: 0.0
 visualize_potential: false

@@ -11,11 +11,11 @@ from wait_for_goal import WaitForGoal
 
 
 @smach.cb_interface(
-    input_keys=['target_pose', 'local_planner', 'global_planner', 'recovery_behaviors'])
+    input_keys=['target_pose', 'controller', 'planner', 'recovery_behaviors'])
 def move_base_goal_cb(userdata, goal):
     goal.target_pose = userdata.target_pose
-    goal.local_planner = userdata.local_planner
-    goal.global_planner = userdata.global_planner
+    goal.controller = userdata.controller
+    goal.planner = userdata.planner
     goal.recovery_behaviors = userdata.recovery_behaviors
 
 
@@ -52,8 +52,8 @@ def main():
     mbf_sm.userdata.goal_position = None
     mbf_sm.userdata.recovery_behavior = None
     mbf_sm.userdata.clear_costmap_flag = False
-    mbf_sm.userdata.local_planner = 'dwa_local_planner'
-    mbf_sm.userdata.global_planner = 'global_planner'
+    mbf_sm.userdata.controller = 'controller'
+    mbf_sm.userdata.planner = 'planner'
     mbf_sm.userdata.recovery_behaviors = ['clear_costmap', 'rotate_recovery']
 
     with mbf_sm:

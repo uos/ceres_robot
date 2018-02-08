@@ -19,7 +19,7 @@ def get_path_goal_cb(userdata, goal):
     goal.use_start_pose = False
     goal.tolerance = 0.2
     goal.target_pose = userdata.target_pose
-    goal.global_planner = 'global_planner'
+    goal.planner = 'planner'
 
 
 @smach.cb_interface(
@@ -38,7 +38,7 @@ def get_path_result_cb(userdata, status, result):
 @smach.cb_interface(input_keys=['path'])
 def ex_path_goal_cb(userdata, goal):
     goal.path = userdata.path
-    goal.local_planner = 'dwa_local_planner'
+    goal.controller = 'controller'
 
 
 @smach.cb_interface(

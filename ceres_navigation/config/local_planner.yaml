@@ -1,6 +1,0 @@
-controllers:
-  - name: 'controller'
-  - type: 'base_local_planner/TrajectoryPlannerROS'
-TrajectoryPlannerROS:
-  holonomic_robot: false
-

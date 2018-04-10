@@ -74,3 +74,6 @@ ceres-ssh(){
 }
 
 ceres-host
+
+# Change ROS console format
+export ROSCONSOLE_FORMAT='[${severity}] [${node}] [${time}]: ${message}'

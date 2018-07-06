@@ -2,15 +2,9 @@
 import rospy
 import smach
 import smach_ros
-from move_base_flex_msgs.msg import ExePathAction
-from move_base_flex_msgs.msg import ExePathResult
-
-from move_base_flex_msgs.msg import GetPathAction
-from move_base_flex_msgs.msg import GetPathResult
-
-from move_base_flex_msgs.msg import RecoveryAction
-from move_base_flex_msgs.msg import RecoveryResult
-
+from mbf_msgs.msg import ExePathAction, ExePathResult
+from mbf_msgs.msg import GetPathAction, GetPathResult
+from mbf_msgs.msg import RecoveryAction, RecoveryResult
 from wait_for_goal import WaitForGoal
 
 
@@ -36,7 +30,7 @@ def get_path_result_cb(userdata, status, result):
 
 
 @smach.cb_interface(input_keys=['path'])
-def ex_path_goal_cb(userdata, goal):
+def exe_path_goal_cb(userdata, goal):
     goal.path = userdata.path
     goal.local_planner = 'dwa_local_planner'
 
@@ -44,7 +38,7 @@ def ex_path_goal_cb(userdata, goal):
 @smach.cb_interface(
     output_keys=['outcome', 'message', 'final_pose', 'dist_to_goal'],
     outcomes=['success', 'failure'])
-def ex_path_result_cb(userdata, status, result):
+def exe_path_result_cb(userdata, status, result):
     userdata.message = result.message
     userdata.outcome = result.outcome
     userdata.dist_to_goal = result.dist_to_goal
@@ -98,8 +92,8 @@ def main():
         smach.StateMachine.add('EXE_PATH',
                                smach_ros.SimpleActionState('move_base_flex/exe_path',
                                                            ExePathAction,
-                                                           goal_cb=ex_path_goal_cb,
-                                                           result_cb=ex_path_result_cb),
+                                                           goal_cb=exe_path_goal_cb,
+                                                           result_cb=exe_path_result_cb),
                                transitions={'success': 'WAIT_FOR_GOAL',
                                             'failure': 'RECOVERY'})
 

@@ -16,7 +16,7 @@
   <!-- Move Base Flex -->
   <node pkg="move_base_flex" type="mbf_2d_nav" respawn="false" name="move_base_flex" output="screen"> 
     <param name="tf_timeout" value="1.5"/>
-    <param name="global_planner_max_retries" value="3"/>
+    <param name="planner_max_retries" value="3"/>
     <rosparam file="$(find ceres_navigation)/config/global_planner.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/local_planner.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/recovery_behaviors.yaml" command="load" />

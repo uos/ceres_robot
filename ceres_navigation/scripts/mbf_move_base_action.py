@@ -3,8 +3,8 @@ import roslib
 import rospy
 import smach
 import smach_ros
-from move_base_flex_msgs.msg import MoveBaseAction
-from move_base_flex_msgs.msg import MoveBaseResult
+from mbf_msgs.msg import MoveBaseAction
+from mbf_msgs.msg import MoveBaseResult
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 from wait_for_goal import WaitForGoal

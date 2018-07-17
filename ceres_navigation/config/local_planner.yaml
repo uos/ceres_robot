@@ -1,4 +1,0 @@
-local_planner: "base_local_planner/TrajectoryPlannerROS"
-TrajectoryPlannerROS:
-  holonomic_robot: false
-

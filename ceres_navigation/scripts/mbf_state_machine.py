@@ -2,18 +2,24 @@
 import rospy
 import smach
 import smach_ros
-from mbf_msgs.msg import ExePathAction, ExePathResult
-from mbf_msgs.msg import GetPathAction, GetPathResult
-from mbf_msgs.msg import RecoveryAction, RecoveryResult
-from wait_for_goal import WaitForGoal
 
+from mbf_msgs.msg import ExePathAction
+from mbf_msgs.msg import ExePathResult
+
+from mbf_msgs.msg import GetPathAction
+from mbf_msgs.msg import GetPathResult
+
+from mbf_msgs.msg import RecoveryAction
+from mbf_msgs.msg import RecoveryResult
+
+from wait_for_goal import WaitForGoal
 
 @smach.cb_interface(input_keys=['target_pose'])
 def get_path_goal_cb(userdata, goal):
     goal.use_start_pose = False
     goal.tolerance = 0.2
     goal.target_pose = userdata.target_pose
-    goal.global_planner = 'global_planner'
+    goal.planner = 'planner'
 
 
 @smach.cb_interface(
@@ -32,7 +38,7 @@ def get_path_result_cb(userdata, status, result):
 @smach.cb_interface(input_keys=['path'])
 def exe_path_goal_cb(userdata, goal):
     goal.path = userdata.path
-    goal.local_planner = 'dwa_local_planner'
+    goal.controller = 'eband'
 
 
 @smach.cb_interface(

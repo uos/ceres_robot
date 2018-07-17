@@ -1,0 +1,14 @@
+planners:
+  - name: 'planner'
+    type: 'global_planner/GlobalPlanner'
+planner:
+  allow_unknown: false
+  default_tolerance: 0.0
+  visualize_potential: false
+  use_dijkstra: true
+  use_quadratic: false
+  use_grid_path: false
+  old_navfn_behaviour: false
+  lethal_cost: 253
+  neutral_cost: 30
+  cost_factor: 1.0

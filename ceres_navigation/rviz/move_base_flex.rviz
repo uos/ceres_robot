@@ -7,7 +7,8 @@ Panels:
         - /Static Map1
         - /Sick Tim Laser Scan1
         - /Local Costmap1
-        - /Global Plan1
+        - /SBPLLatticePlanner1
+        - /GlobalPlanner1
         - /Local Path1
         - /Particle Cloud1
       Splitter Ratio: 0.5
@@ -206,7 +207,7 @@ Visualization Manager:
       Length: 0.300000012
       Line Style: Lines
       Line Width: 0.0299999993
-      Name: Global Plan
+      Name: SBPLLatticePlanner
       Offset:
         X: 0
         Y: 0
@@ -216,7 +217,30 @@ Visualization Manager:
       Radius: 0.0299999993
       Shaft Diameter: 0.100000001
       Shaft Length: 0.100000001
-      Topic: /global_path
+      Topic: /move_base_flex/SBPLLatticePlanner/plan
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 255; 0; 0
+      Enabled: true
+      Head Diameter: 0.300000012
+      Head Length: 0.200000003
+      Length: 0.300000012
+      Line Style: Lines
+      Line Width: 0.0299999993
+      Name: GlobalPlanner
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.0299999993
+      Shaft Diameter: 0.100000001
+      Shaft Length: 0.100000001
+      Topic: /move_base_flex/GlobalPlanner/plan
       Unreliable: false
       Value: true
     - Alpha: 1

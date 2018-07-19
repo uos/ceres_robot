@@ -1,0 +1,3 @@
+*.pyc
+ceres_navigation/config/mprim.yaml
+.idea/

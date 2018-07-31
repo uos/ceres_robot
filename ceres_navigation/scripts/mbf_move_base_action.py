@@ -52,7 +52,7 @@ def main():
     mbf_sm.userdata.goal_position = None
     mbf_sm.userdata.recovery_behavior = None
     mbf_sm.userdata.clear_costmap_flag = False
-    mbf_sm.userdata.controller = 'controller'
+    mbf_sm.userdata.controller = 'eband'
     mbf_sm.userdata.planner = 'planner'
     mbf_sm.userdata.recovery_behaviors = ['clear_costmap', 'rotate_recovery']
 

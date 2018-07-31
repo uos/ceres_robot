@@ -1,0 +1,7 @@
+<library path="lib/libmoveback_recovery">
+  <class name="moveback_recovery/MoveBackRecovery" type="moveback_recovery::MoveBackRecovery" base_class_type="mbf_costmap_core::CostmapRecovery">
+    <description>
+      Moves the robot back
+    </description>
+  </class>
+</library>

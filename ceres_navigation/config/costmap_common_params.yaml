@@ -4,7 +4,7 @@ obstacle_range: 2.5
 raytrace_range: 3.0
 footprint: [[-0.26, 0.27],[0.26,0.27],[0.26,-0.27],[-0.26,-0.27]]
 # robot_radius: ir_of_robot
-inflation_radius: 0.35
+inflation_radius: 0.45
 
 # uncomment to take in calculations of picco_flexx for the costmap.
 # TODO: use unimplemented filter to take out noise

@@ -66,10 +66,10 @@ class MBFStateMachine(smach.StateMachine):
 
     @cb_interface(output_keys=['outcome', 'message'], outcomes=['succeeded', 'failure'])
     def recovery_result_cb(self, userdata, status, result):
-        print result.outcome
-        # TODO: preempted and aborted
         if result.outcome == RecoveryResult.SUCCESS:
             return 'succeeded'
+        elif result.outcome == RecoveryResult.CANCELED:
+            return 'preempted'
         else:
             return 'failure'
 

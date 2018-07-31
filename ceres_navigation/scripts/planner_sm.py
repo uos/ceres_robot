@@ -66,16 +66,12 @@ class PlannerStateMachine(smach.StateMachine):
     def get_path_result_cb(self, userdata, status, result):
         if result is None:  # something preempted or aborted this
             print 'result is None!'
-            userdata.message = 1
-            userdata.outcome = 1
-            userdata.path = 1
             return 'aborted'
 
         userdata.message = result.message
         userdata.outcome = result.outcome
         userdata.path = result.path
-        #global FIRST_CALL
-        #FIRST_CALL = False
+
         if result.outcome == GetPathResult.SUCCESS:
             return 'succeeded'
         elif result.outcome == GetPathResult.CANCELED:

@@ -13,9 +13,9 @@ class CBInterface(SmachCBInterface):
 
     def __call__(self, *args, **kwargs):
         if self._instance is not None:
-            self._cb(self._instance, *args, **kwargs)
+            return self._cb(self._instance, *args, **kwargs)
         else:
-            self._cb(*args, **kwargs)
+            return self._cb(*args, **kwargs)
 
 class cb_interface(smach_cb_interface):
     def __init__(self, *args, **kwargs):

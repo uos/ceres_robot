@@ -50,6 +50,7 @@ class ReplanningStateMachine(smach.StateMachine):
             output_keys=['outcome', 'message', 'path'])
 
         self._max_vel_lin = rospy.get_param('/move_base_flex/eband/max_vel_lin')
+        self._max_vel_th = rospy.get_param('/move_base_flex/eband/max_vel_th')
 
         with self:
             state = smach_ros.SimpleActionState(
@@ -93,7 +94,7 @@ class ReplanningStateMachine(smach.StateMachine):
         # get current robots pose
         listener = tf.TransformListener()
         ok = False
-        lookup_timeout_time = rospy.Time.now() + rospy.Duration(15)
+        lookup_timeout_time = rospy.Time.now() + rospy.Duration(5)
         while not ok:
             if lookup_timeout_time < rospy.Time.now():
                 raise Exception("Lookup timed out!")
@@ -124,7 +125,9 @@ class ReplanningStateMachine(smach.StateMachine):
         print 'difference: ', angle_diff
 
         # Wait one second for a half turn
-        planner_time = angle_diff/180.0  # MAGIC 1
+        rotation_time = angle_diff/180.0  # MAGIC 1
+        print self._max_vel_th
+        look_forward_length = rotation_time * self._max_vel_th
 
         #calculate length of path
         poses = userdata.path.poses
@@ -136,11 +139,10 @@ class ReplanningStateMachine(smach.StateMachine):
         print 'Path length: ', path_length
 
         # Add the path length to the planner time.
-        planner_time += path_length * 0.1  # MAGIC 2
-        print 'Planner time: ', planner_time
+        translation_time = path_length * 0.1  # MAGIC 2
 
         # How much the robot can move in the time needed by the planner?
-        look_forward_length = planner_time * self._max_vel_lin
+        look_forward_length += translation_time * self._max_vel_lin
         print 'look forward length: ', look_forward_length
 
         #find the point, that is look_forward_length meters away from the start of the path

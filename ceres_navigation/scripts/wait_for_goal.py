@@ -20,6 +20,7 @@ class WaitForGoal(smach.State):
         self._subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_callback)
 
         rate = 0.3
+        # Wait for the callback to be called..
         while not self._flag_goal_received and not rospy.is_shutdown():
             time.sleep(rate)
 
@@ -32,7 +33,7 @@ class WaitForGoal(smach.State):
         return 'succeeded'
 
     def goal_callback(self, msg):
-        print "Received goal:"
+        print "Received goal!"
         self._global_target_pose = msg
         self._subscriber.unregister()
         self._flag_goal_received = True

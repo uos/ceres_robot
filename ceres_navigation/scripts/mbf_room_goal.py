@@ -6,11 +6,12 @@ import smach_ros
 from mbf_msgs.msg import RecoveryAction
 from mbf_msgs.msg import RecoveryResult
 
-from mbf_msgs.msg import GetPathAction
-from mbf_msgs.msg import GetPathResult
-
 from wait_for_goal import WaitForGoal
-from execute_while_replan_sm import ExecWhileReplanStateMachine
+from geometry_msgs.msg import PoseStamped
+
+from plan_exec_sm import PlanExecStateMachine
+from monte_carlo_poses import GetPoses
+from get_best_target_pose import GetBestTargetPose
 
 if hasattr(smach.CBInterface, '__get__'):
     from smach import cb_interface
@@ -18,12 +19,11 @@ else:
     from smach_polyfill import cb_interface
 
 
-class MBFFuturePlanning(smach.StateMachine):
+class MBFStateMachine(smach.StateMachine):
     _recovery_behaviors = None
 
     @classmethod
     def set_recovery_behaviors(cls, recovery_behaviors):
-        """Sets the recovery behaviors used by the statemachine"""
         cls._recovery_behaviors = recovery_behaviors
 
     def __init__(self):
@@ -38,7 +38,24 @@ class MBFFuturePlanning(smach.StateMachine):
                 'WAIT_FOR_GOAL',
                 WaitForGoal(),
                 transitions={
-                    'succeeded': 'GlobalPlanner',
+                    'succeeded': 'GET_POSES',
+                    'preempted': 'preempted'})
+
+            smach.StateMachine.add(
+                'GET_POSES',
+                GetPoses(),
+                transitions={
+                    'succeeded': 'GET_BEST_TARGET_POSE',
+                    'room_not_found': 'PLAN_EXEC',
+                    'failure': 'WAIT_FOR_GOAL',
+                    'preempted': 'preempted'})
+
+            smach.StateMachine.add(
+                'GET_BEST_TARGET_POSE',
+                GetBestTargetPose(),
+                transitions={
+                    'succeeded': 'PLAN_EXEC',
+                    'failure': 'WAIT_FOR_GOAL',
                     'preempted': 'preempted'})
 
             smach.StateMachine.add(
@@ -49,29 +66,17 @@ class MBFFuturePlanning(smach.StateMachine):
                     goal_cb=self.recovery_goal_cb,
                     result_cb=self.recovery_result_cb),
                 transitions={
-                    'succeeded': 'GlobalPlanner',
+                    'succeeded': 'PLAN_EXEC',
                     'failure': 'WAIT_FOR_GOAL'})
 
-            state = smach_ros.SimpleActionState(
-                'move_base_flex/get_path',
-                GetPathAction,
-                goal_cb=self.get_path_goal_cb,
-                result_cb=self.get_path_result_cb)
+            plan_exec_sm = PlanExecStateMachine()
             smach.StateMachine.add(
-                'GlobalPlanner',
-                state,
-                transitions={
-                    'succeeded': 'EXECUTION',
-                    'failure': 'WAIT_FOR_GOAL',
-                    'preempted': 'preempted'})
-
-            exec_while_replan_sm = ExecWhileReplanStateMachine()
-            smach.StateMachine.add(
-                'EXECUTION',
-                exec_while_replan_sm,
+                'PLAN_EXEC',
+                plan_exec_sm,
                 transitions={
                     'failure': 'RECOVERY',
-                    'succeeded': 'WAIT_FOR_GOAL'})
+                    'succeeded': 'WAIT_FOR_GOAL',
+                    'invalid': 'WAIT_FOR_GOAL'})
 
     @cb_interface(input_keys=['recovery_behavior_index'], output_keys=['recovery_behavior_index'])
     def recovery_goal_cb(self, userdata, goal):
@@ -85,37 +90,11 @@ class MBFFuturePlanning(smach.StateMachine):
 
     @cb_interface(output_keys=['outcome', 'message'], outcomes=['succeeded', 'failure'])
     def recovery_result_cb(self, userdata, status, result):
-        print result.outcome
-        # TODO: preempted and aborted
         if result.outcome == RecoveryResult.SUCCESS:
             return 'succeeded'
-        else:
-            return 'failure'
-
-    @cb_interface(input_keys=['target_pose'])
-    def get_path_goal_cb(self, userdata, goal):
-        goal.use_start_pose = False
-        goal.tolerance = 0.2
-        goal.target_pose = userdata.target_pose
-        goal.planner = 'GlobalPlanner'
-
-    @cb_interface(
-        output_keys=['message', 'outcome', 'path'],
-        outcomes=['succeeded', 'failure'])
-    def get_path_result_cb(self, userdata, status, result):
-        if result is None:  # something preempted or aborted this
-            return 'aborted'
-
-        userdata.message = result.message
-        userdata.outcome = result.outcome
-        userdata.path = result.path
-
-        if result.outcome == GetPathResult.SUCCESS:
-            return 'succeeded'
-        elif result.outcome == GetPathResult.CANCELED:
+        elif result.outcome == RecoveryResult.CANCELED:
             return 'preempted'
         else:
-            print 'Planning with GlobalPlanner terminated with non-success status code %s:\n%s' % (str(result.outcome), result.message)
             return 'failure'
 
 
@@ -123,13 +102,19 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         rospy.init_node('mbf_state_machine')
 
-        recovery_behaviors = [entry['name'] for entry in rospy.get_param('/move_base_flex/recovery_behaviors')]
-        MBFFuturePlanning.set_recovery_behaviors(recovery_behaviors)
+        planners = [entry['name'] for entry in rospy.get_param('/move_base_flex/planners')]
+        if len(planners) == 0:
+            raise ValueError('You have to specify at least one planner')
+        PlanExecStateMachine.set_planners(planners)
 
-        SM = MBFFuturePlanning()
+        recovery_behaviors = [entry['name'] for entry in rospy.get_param('/move_base_flex/recovery_behaviors')]
+        MBFStateMachine.set_recovery_behaviors(recovery_behaviors)
+
+        SM = MBFStateMachine()
 
         sis = smach_ros.IntrospectionServer('mbf_state_machine_server', SM, '/MBF_SM')
         sis.start()
 
         outcome = SM.execute()
         sis.stop()
+        rospy.spin()

@@ -9,8 +9,12 @@ from mbf_msgs.msg import RecoveryResult
 from wait_for_goal import WaitForGoal
 from geometry_msgs.msg import PoseStamped
 
-from smach_utils import cb_interface
 from plan_exec_sm import PlanExecStateMachine
+
+if hasattr(smach.CBInterface, '__get__'):
+    from smach import cb_interface
+else:
+    from smach_polyfill import cb_interface
 
 
 class MBFStateMachine(smach.StateMachine):
@@ -18,6 +22,7 @@ class MBFStateMachine(smach.StateMachine):
 
     @classmethod
     def set_recovery_behaviors(cls, recovery_behaviors):
+        """Sets the recovery behaviors used by the statemachine"""
         cls._recovery_behaviors = recovery_behaviors
 
     def __init__(self):
@@ -52,13 +57,14 @@ class MBFStateMachine(smach.StateMachine):
                 plan_exec_sm,
                 transitions={
                     'failure': 'RECOVERY',
+                    'invalid': 'WAIT_FOR_GOAL',
                     'succeeded': 'WAIT_FOR_GOAL'})
 
     @cb_interface(input_keys=['recovery_behavior_index'], output_keys=['recovery_behavior_index'])
     def recovery_goal_cb(self, userdata, goal):
-        # TODO implement a more clever way to call the right behavior. Currently cycles through all behaviors
+        # Cycle through all behaviors
         behavior = self._recovery_behaviors[userdata.recovery_behavior_index]
-        print 'RECOVERY BEHAVIOR:', behavior
+        print 'Using recovery behavior: ', behavior
         goal.behavior = behavior
         userdata.recovery_behavior_index += 1
         if userdata.recovery_behavior_index >= len(self._recovery_behaviors):
@@ -79,8 +85,13 @@ SM_target_pose = None
 
 
 def goal_callback(target_pose):
+    """
+    Called, if a new goal is given. If the statemachine is running, it will be preempted
+    and as a result restarted in the main loop
+    """
     if SM is not None and SM.get_active_states()[0] != 'WAIT_FOR_GOAL':
         SM.request_preempt()
+        # Save target_pose for the restart
         global SM_target_pose
         SM_target_pose = target_pose
 
@@ -106,10 +117,11 @@ if __name__ == '__main__':
         sis = smach_ros.IntrospectionServer('mbf_state_machine_server', SM, '/MBF_SM')
         sis.start()
 
-        if SM_target_pose is not None:
+        if SM_target_pose is not None:  # This pose is set, if the SM is restarted
             SM.userdata._data = {}
             SM.userdata.recovery_behavior_index = 0
 
+            # If the target_pose is given, execute it right away.
             target_userdata = smach.UserData()
             target_userdata.target_pose = SM_target_pose
             SM.set_initial_state(['PLAN_EXEC'], userdata=target_userdata)
@@ -118,4 +130,3 @@ if __name__ == '__main__':
 
         subscriber.unregister()
         sis.stop()
-

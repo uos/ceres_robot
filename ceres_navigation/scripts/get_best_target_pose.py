@@ -45,15 +45,13 @@ class GetBestTargetPose(smach.Concurrence):
                     GetPathAction,
                     goal_cb=self.get_path_goal_cb(i),
                     result_cb=self.get_path_result_cb(i))
-                smach.Concurrence.add( str(i), state)
+                smach.Concurrence.add(str(i), state)
 
     def execute(self, parent_ud = smach.UserData()):
         self._min_path_length = 1e10
         self._best_pose = None
 
-        outcome = smach.Concurrence.execute(self, parent_ud=parent_ud)
-        print "After execution"
-        return outcome
+        return smach.Concurrence.execute(self, parent_ud=parent_ud)
 
     def get_best_target_pose_sm_child_termination_cb(self, outcome_map):
         # Always wait for every child to terminate

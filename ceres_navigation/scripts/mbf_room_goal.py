@@ -20,10 +20,17 @@ else:
 
 
 class MBFStateMachine(smach.StateMachine):
+    """
+    A Statemachine accepting goals and checks, if the goal is in a room (see monte_carlo_poses.py).
+    If a room is found, SOme poses are randomly put into it and the best target pose is searched. Then
+    the plan_exec_sm will navigate to it. If the pose isn't in any room, it will just be taken as the target pose.
+    """
     _recovery_behaviors = None
 
     @classmethod
     def set_recovery_behaviors(cls, recovery_behaviors):
+        """Sets the recovery behaviors used by the statemachine"""
+
         cls._recovery_behaviors = recovery_behaviors
 
     def __init__(self):
@@ -33,7 +40,7 @@ class MBFStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['preempted', 'aborted'])
         self.userdata.recovery_behavior_index = 0  # start with first recovery behavior
 
-        with self:
+        with self:  # Just simple plug and play with the states.
             smach.StateMachine.add(
                 'WAIT_FOR_GOAL',
                 WaitForGoal(),
@@ -41,6 +48,8 @@ class MBFStateMachine(smach.StateMachine):
                     'succeeded': 'GET_POSES',
                     'preempted': 'preempted'})
 
+            # This state takes a target_pose, lookup the room. If a room is found, it will put an array
+            # of poses into the userdata
             smach.StateMachine.add(
                 'GET_POSES',
                 GetPoses(),
@@ -50,6 +59,8 @@ class MBFStateMachine(smach.StateMachine):
                     'failure': 'WAIT_FOR_GOAL',
                     'preempted': 'preempted'})
 
+            # Takes an array of poses and planns with the GlobalPlanner parallel to every target_pose
+            # Sets the target_pose in the userdata as the best target pose
             smach.StateMachine.add(
                 'GET_BEST_TARGET_POSE',
                 GetBestTargetPose(),

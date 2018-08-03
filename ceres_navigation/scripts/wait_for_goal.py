@@ -6,6 +6,7 @@ from geometry_msgs.msg import PoseStamped
 
 
 class WaitForGoal(smach.State):
+    """Waits for a message on /move_base_simple/goal and puts it in the userdata as target_pose"""
     def __init__(self):
         smach.State.__init__(
             self,

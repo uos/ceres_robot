@@ -17,7 +17,7 @@ if hasattr(smach.CBInterface, '__get__'):
 else:
     from smach_polyfill import cb_interface
 
-
+# These interfaces are used for the ReplanningStateMachine (down below) and in execute_while_replanning.py
 @cb_interface(input_keys=['path'])
 def exe_path_goal_cb(userdata, goal):
     goal.path = userdata.path
@@ -41,7 +41,9 @@ def exe_path_result_cb(userdata, status, result):
 
 
 class ReplanningStateMachine(smach.StateMachine):
-
+    """
+    The actual estimation happens here. Then planning and execution is done.
+    """
     def __init__(self):
         smach.StateMachine.__init__(
             self,
@@ -66,6 +68,7 @@ class ReplanningStateMachine(smach.StateMachine):
                     'failure': 'failure',
                     'preempted': 'preempted',
                     'aborted': 'aborted'})
+
             state = smach_ros.SimpleActionState(
                 'move_base_flex/exe_path',
                 ExePathAction,

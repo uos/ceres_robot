@@ -105,9 +105,7 @@ if __name__ == '__main__':
             raise ValueError('You have to specify at least one planner')
         PlanExecStateMachine.set_planners(planners)
 
-
         subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, goal_callback)
-
 
         recovery_behaviors = [entry['name'] for entry in rospy.get_param('/move_base_flex/recovery_behaviors')]
         MBFStateMachine.set_recovery_behaviors(recovery_behaviors)

@@ -6,17 +6,23 @@ from mbf_msgs.srv import CheckPose, CheckPoseRequest, CheckPoseResponse
 
 from geometry_msgs.msg import PoseStamped, PoseArray
 
+# Those are rectangles given by two points: p1 is the upper left one, p2 right down.
 ROOMS = {
     #    (( p1.x, p1.y ), ( p2.x, p2.y ))
-    'A': ((1.13393211365, 5.49522399902), (8.10231494904, -0.412775993347)),
-    'B': ((2.38570976257, -0.625261306763), (8.14372158051, -3.99622440338))
+    #'A': ((1.13393211365, 5.49522399902), (8.10231494904, -0.412775993347)),
+    #'B': ((2.38570976257, -0.625261306763), (8.14372158051, -3.99622440338)),
+    'unten-rechts': ((3.43812513351, 2.89922595024), (5.91117191315, 0.375998139381))
 }
-NUM_POSES = 20
+NUM_POSES = 10
 
 
 class GetPoses(smach.State):
+    """
+    Takes a target_pose, lookup the room (see above) and randomly throws NUM_POSES poses into it.
+    These poses are checked to be free. Published a pose array to /poses_checked.
+    """
 
-    _poses_pub = None
+    _poses_pub = None  # Publisher for the poses
 
     def __init__(self):
         smach.State.__init__(
@@ -38,6 +44,7 @@ class GetPoses(smach.State):
 
         poses = []
         while len(poses) < NUM_POSES:
+            # Construct a pose
             x, y = self.get_rand_xy_for_room(room)
             pose = PoseStamped()
             pose.header.frame_id = 'map'
@@ -46,6 +53,7 @@ class GetPoses(smach.State):
             pose.pose.position.y = y
             pose.pose.orientation = userdata.target_pose.pose.orientation
             try:
+                # check it. If it's free, append to poses
                 check_pose_cost = rospy.ServiceProxy('/move_base_flex/check_pose_cost', CheckPose)
                 request = CheckPoseRequest()
                 request.pose = pose
@@ -61,7 +69,7 @@ class GetPoses(smach.State):
                 return 'failure'
         userdata.poses = poses
 
-        #convert to PoseArray for visualization
+        # convert to PoseArray for visualization and publish it
         pose_array = PoseArray()
         pose_array.header = poses[0].header
         for pose in poses:

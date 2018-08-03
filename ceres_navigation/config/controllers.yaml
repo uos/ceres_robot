@@ -25,8 +25,8 @@ eband:
   max_rotational_acceleration: 0.3
   max_translational_acceleration: 0.4
   # Lower values for testing with the actual robot.
-  max_vel_lin: 1.45 #0.5 #1.45
-  max_vel_th: 2.0 #0.5 #2.0
+  max_vel_lin: 1.45 #0.5
+  max_vel_th: 2.0 #0.75
   min_in_place_vel_th: 0.05
   min_vel_lin: 0.0
   min_vel_th: 0.0

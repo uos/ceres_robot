@@ -15,8 +15,7 @@
   <include if="$(arg gmapping)" file="$(find ceres_navigation)/launch/gmapping.launch" />
 
   <!-- Move Base Flex -->
-  <!-- add launch-prefix="gdb -ex run - -args" (double dash before args, XML doesn't allow this in comments..) for enable gdb-->
-  <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex" output="screen">
+  <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex" launch-prefix="gdb -ex run --args" output="screen">
     <param name="tf_timeout" value="1.5"/>
     <param name="planner_max_retries" value="3"/>
     <rosparam file="$(find ceres_navigation)/config/planners.yaml" command="load" />

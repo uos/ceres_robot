@@ -14,6 +14,10 @@ else:
 
 
 class PlannerStateMachine(smach.StateMachine):
+    """
+    A simple state machine, that plans globally with the given planner in the given concurrency_slot
+    and after planning it will be executed with the controller given.
+    """
     def __init__(self, concurrency_slot, planner_name, controller_name):
         smach.StateMachine.__init__(
             self,
@@ -78,6 +82,8 @@ class PlannerStateMachine(smach.StateMachine):
         elif result.outcome == GetPathResult.CANCELED:
             return 'preempted'
         elif result.outcome in (GetPathResult.INVALID_START, GetPathResult.INVALID_GOAL, GetPathResult.NO_PATH_FOUND, GetPathResult.PAT_EXCEEDED):
+            # We will take PAT_EXCEEDED as a failure to get a path. The most planners currently won't give a better feedback, so if it
+            # takes too long to find a path, there might be no path.
             print 'Planning with %s could not get any path %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
             return 'invalid'
         else:

@@ -19,6 +19,12 @@ else:
 
 
 class MBFFuturePlanning(smach.StateMachine):
+    """
+    This statemachine first plans with the GlobalPlanner, then estimates how long the planning
+    with the SBPLLatticePlanner takes. Then it plans from a point on the global path, that the robot
+    can reach in the estimated time.
+    The goal is to make a smooth transition from one global path to another.
+    """
     _recovery_behaviors = None
 
     @classmethod
@@ -52,6 +58,7 @@ class MBFFuturePlanning(smach.StateMachine):
                     'succeeded': 'GlobalPlanner',
                     'failure': 'WAIT_FOR_GOAL'})
 
+            # The first get-path state to get the initial path
             state = smach_ros.SimpleActionState(
                 'move_base_flex/get_path',
                 GetPathAction,
@@ -65,6 +72,7 @@ class MBFFuturePlanning(smach.StateMachine):
                     'failure': 'WAIT_FOR_GOAL',
                     'preempted': 'preempted'})
 
+            # Here the "magic" happens. The initial path will be executed while the SBPLLatticePlanner plans a better path.
             exec_while_replan_sm = ExecWhileReplanStateMachine()
             smach.StateMachine.add(
                 'EXECUTION',

@@ -7,7 +7,10 @@ from replan_sm import *
 
 
 class ExecWhileReplanStateMachine(smach.Concurrence):
-
+    """
+    This concurrency container executes a given path and estimates a point on the path, where the
+    robot can be, if the SBPLLatticePlanner will finish.
+    """
     def __init__(self):
         smach.Concurrence.__init__(
             self,
@@ -41,10 +44,12 @@ class ExecWhileReplanStateMachine(smach.Concurrence):
             outcome_cb=self.plan_exec_sm_outcome_cb)
 
         with self:
+            # The Planning and execute state machine
             smach.Concurrence.add(
                 'SBPLLatticePlanner',
                 ReplanningStateMachine())
 
+            # Just some execution
             state = smach_ros.SimpleActionState(
                 'move_base_flex/exe_path',
                 ExePathAction,
@@ -63,9 +68,7 @@ class ExecWhileReplanStateMachine(smach.Concurrence):
 
     # gets called when ALL child states are terminated
     def plan_exec_sm_outcome_cb(self, outcome_map):
-        print "plan_exec_sm_outcome_cb"
-        print outcome_map
-
+        # check for success
         for label in ('Execution', 'SBPLLatticePlanner'):
             if outcome_map[label] == 'succeeded':
                 return 'succeeded'

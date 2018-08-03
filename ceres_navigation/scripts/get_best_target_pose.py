@@ -13,7 +13,6 @@ else:
     from smach_polyfill import cb_interface
 
 
-
 class GetBestTargetPose(smach.Concurrence):
     def __init__(self):
         outcome_map = {
@@ -50,7 +49,6 @@ class GetBestTargetPose(smach.Concurrence):
 
     def execute(self, parent_ud = smach.UserData()):
         self._min_path_length = 1e10
-        self._best_pose_index = None
         self._best_pose = None
 
         outcome = smach.Concurrence.execute(self, parent_ud=parent_ud)
@@ -58,16 +56,15 @@ class GetBestTargetPose(smach.Concurrence):
         return outcome
 
     def get_best_target_pose_sm_child_termination_cb(self, outcome_map):
-        #print "get_best_target_pose_sm_child_termination_cb"
-        #print outcome_map
+        # Always wait for every child to terminate
         return False
 
     # gets called when ALL child states are terminated
     def get_best_target_pose_sm_outcome_cb(self, outcome_map):
-        print "get_best_target_pose_sm_outcome_cb"
-        print outcome_map
-        print 'MIN: ', self._min_path_length, ' index: ', self._best_pose_index
-        print self._best_pose
+        if self._best_pose is None:
+            return 'failure'
+
+        print 'Min path length: ', self._min_path_length
         return 'succeeded'
 
     def get_path_goal_cb(self, index):
@@ -98,11 +95,10 @@ class GetBestTargetPose(smach.Concurrence):
                     pow(poses[i+1].pose.position.x - poses[i].pose.position.x, 2)
                     + pow(poses[i+1].pose.position.y - poses[i].pose.position.y, 2))
 
+            # Check, if this path is the shortest
             if path_length < self._min_path_length:
                 self._min_path_length = path_length
-                self._best_pose_index = index
                 self._best_pose = userdata.poses[index]
-                print 'new min: ', path_length, ' index: ', index
                 userdata.target_pose = userdata.poses[index]
 
             if result.outcome == GetPathResult.SUCCESS:

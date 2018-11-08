@@ -9,7 +9,7 @@ from mbf_msgs.msg import RecoveryResult
 from wait_for_goal import WaitForGoal
 from geometry_msgs.msg import PoseStamped
 
-from smach_utils import cb_interface
+from smach_polyfill import cb_interface
 from plan_exec_sm import PlanExecStateMachine
 
 

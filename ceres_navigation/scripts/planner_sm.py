@@ -89,14 +89,18 @@ class PlannerStateMachine(smach.StateMachine):
         output_keys=['outcome', 'message', 'final_pose', 'dist_to_goal'],
         outcomes=['succeeded', 'failure'])
     def exe_path_result_cb(self, userdata, status, result):
-        userdata.message = result.message
-        userdata.outcome = result.outcome
-        userdata.dist_to_goal = result.dist_to_goal
-        userdata.final_pose = result.final_pose
-        if result.outcome == ExePathResult.SUCCESS:
-            return 'succeeded'
-        elif result.outcome == ExePathResult.CANCELED:
-            return 'preempted'
+        if result:
+            userdata.message = result.message
+            userdata.outcome = result.outcome
+            userdata.dist_to_goal = result.dist_to_goal
+            userdata.final_pose = result.final_pose
+            if result.outcome == ExePathResult.SUCCESS:
+                return 'succeeded'
+            elif result.outcome == ExePathResult.CANCELED:
+                return 'preempted'
+            else:
+                print 'Execution of %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+                return 'failure'
         else:
-            print 'Execution of %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+            print status
             return 'failure'

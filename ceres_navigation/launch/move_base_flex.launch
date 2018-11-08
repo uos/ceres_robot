@@ -19,8 +19,8 @@
   <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex" output="screen">
     <param name="tf_timeout" value="1.5"/>
     <param name="planner_max_retries" value="3"/>
+    <param name="SBPLLatticePlanner/primitive_filename" value="$(find ceres_navigation)/mprim/ceres_5cm.mprim"/>
     <rosparam file="$(find ceres_navigation)/config/planners.yaml" command="load" />
-    <rosparam file="$(find ceres_navigation)/config/mprim.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/controllers.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/recovery_behaviors.yaml" command="load" />
     <rosparam file="$(find ceres_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>

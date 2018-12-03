@@ -41,7 +41,10 @@ Install the udev rules for the phidgets driver
 sudo cp ~/ceres_ws/src/phidgets_drivers/phidgets_api/share/udev/99-phidgets.rules /etc/udev/rules.d
 ```
 
-## Ceres_Util
+## Ceres Simulation
+Use gazebo with Ceres: `roslaunch ceres_gazebo ceres.launch`
+
+## Ceres Util
 We provide a script for an easy remote connection setup in `ceres_util/ceres.rc`.
 *Make sure it is sourced in `~/.bashrc`*
 

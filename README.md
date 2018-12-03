@@ -45,6 +45,8 @@ sudo cp ~/ceres_ws/src/phidgets_drivers/phidgets_api/share/udev/99-phidgets.rule
 We provide a script for an easy remote connection setup in `ceres_util/ceres.rc`.
 *Make sure it is sourced in `~/.bashrc`*
 
+You need to have `dig` installed for all functionality, install it with `sudo apt-get install dnsutils`
+
 The script contains the following functions:
 * `ceres-host`
   * exports the ROS_MASTER_URI

@@ -9,8 +9,9 @@ from mbf_msgs.msg import RecoveryResult
 from wait_for_goal import WaitForGoal
 from geometry_msgs.msg import PoseStamped
 
-from smach_polyfill import cb_interface
 from plan_exec_sm import PlanExecStateMachine
+from monte_carlo_poses import GetPoses
+from get_best_target_pose import GetBestTargetPose
 
 if hasattr(smach.CBInterface, '__get__'):
     from smach import cb_interface
@@ -19,11 +20,17 @@ else:
 
 
 class MBFStateMachine(smach.StateMachine):
+    """
+    A Statemachine accepting goals and checks, if the goal is in a room (see monte_carlo_poses.py).
+    If a room is found, SOme poses are randomly put into it and the best target pose is searched. Then
+    the plan_exec_sm will navigate to it. If the pose isn't in any room, it will just be taken as the target pose.
+    """
     _recovery_behaviors = None
 
     @classmethod
     def set_recovery_behaviors(cls, recovery_behaviors):
         """Sets the recovery behaviors used by the statemachine"""
+
         cls._recovery_behaviors = recovery_behaviors
 
     def __init__(self):
@@ -33,12 +40,33 @@ class MBFStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['preempted', 'aborted'])
         self.userdata.recovery_behavior_index = 0  # start with first recovery behavior
 
-        with self:
+        with self:  # Just simple plug and play with the states.
             smach.StateMachine.add(
                 'WAIT_FOR_GOAL',
                 WaitForGoal(),
                 transitions={
-                    'received_goal': 'PLAN_EXEC',
+                    'succeeded': 'GET_POSES',
+                    'preempted': 'preempted'})
+
+            # This state takes a target_pose, lookup the room. If a room is found, it will put an array
+            # of poses into the userdata
+            smach.StateMachine.add(
+                'GET_POSES',
+                GetPoses(),
+                transitions={
+                    'succeeded': 'GET_BEST_TARGET_POSE',
+                    'room_not_found': 'PLAN_EXEC',
+                    'failure': 'WAIT_FOR_GOAL',
+                    'preempted': 'preempted'})
+
+            # Takes an array of poses and planns with the GlobalPlanner parallel to every target_pose
+            # Sets the target_pose in the userdata as the best target pose
+            smach.StateMachine.add(
+                'GET_BEST_TARGET_POSE',
+                GetBestTargetPose(),
+                transitions={
+                    'succeeded': 'PLAN_EXEC',
+                    'failure': 'WAIT_FOR_GOAL',
                     'preempted': 'preempted'})
 
             smach.StateMachine.add(
@@ -58,14 +86,14 @@ class MBFStateMachine(smach.StateMachine):
                 plan_exec_sm,
                 transitions={
                     'failure': 'RECOVERY',
-                    'invalid': 'WAIT_FOR_GOAL',
-                    'succeeded': 'WAIT_FOR_GOAL'})
+                    'succeeded': 'WAIT_FOR_GOAL',
+                    'invalid': 'WAIT_FOR_GOAL'})
 
     @cb_interface(input_keys=['recovery_behavior_index'], output_keys=['recovery_behavior_index'])
     def recovery_goal_cb(self, userdata, goal):
-        # Cycle through all behaviors
+        # TODO implement a more clever way to call the right behavior. Currently cycles through all behaviors
         behavior = self._recovery_behaviors[userdata.recovery_behavior_index]
-        print 'Using recovery behavior: ', behavior
+        print 'RECOVERY BEHAVIOR:', behavior
         goal.behavior = behavior
         userdata.recovery_behavior_index += 1
         if userdata.recovery_behavior_index >= len(self._recovery_behaviors):
@@ -81,32 +109,14 @@ class MBFStateMachine(smach.StateMachine):
             return 'failure'
 
 
-SM = None
-SM_target_pose = None
-
-
-def goal_callback(target_pose):
-    """
-    Called, if a new goal is given. If the statemachine is running, it will be preempted
-    and as a result restarted in the main loop
-    """
-    if SM is not None and SM.get_active_states()[0] != 'WAIT_FOR_GOAL':
-        SM.request_preempt()
-        # Save target_pose for the restart
-        global SM_target_pose
-        SM_target_pose = target_pose
-
-
 if __name__ == '__main__':
     while not rospy.is_shutdown():
-        rospy.init_node('mbf_state_machine')        
+        rospy.init_node('mbf_state_machine')
 
         planners = [entry['name'] for entry in rospy.get_param('/move_base_flex/planners')]
         if len(planners) == 0:
             raise ValueError('You have to specify at least one planner')
         PlanExecStateMachine.set_planners(planners)
-
-        subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, goal_callback)
 
         recovery_behaviors = [entry['name'] for entry in rospy.get_param('/move_base_flex/recovery_behaviors')]
         MBFStateMachine.set_recovery_behaviors(recovery_behaviors)
@@ -116,16 +126,6 @@ if __name__ == '__main__':
         sis = smach_ros.IntrospectionServer('mbf_state_machine_server', SM, '/MBF_SM')
         sis.start()
 
-        if SM_target_pose is not None:  # This pose is set, if the SM is restarted
-            SM.userdata._data = {}
-            SM.userdata.recovery_behavior_index = 0
-
-            # If the target_pose is given, execute it right away.
-            target_userdata = smach.UserData()
-            target_userdata.target_pose = SM_target_pose
-            SM.set_initial_state(['PLAN_EXEC'], userdata=target_userdata)
-            SM_target_pose = None
         outcome = SM.execute()
-
-        subscriber.unregister()
         sis.stop()
+        rospy.spin()

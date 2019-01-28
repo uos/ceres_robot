@@ -14,17 +14,20 @@ else:
 
 
 class PlannerStateMachine(smach.StateMachine):
+    """
+    A simple state machine, that plans globally with the given planner in the given concurrency_slot
+    and after planning it will be executed with the controller given.
+    """
     def __init__(self, concurrency_slot, planner_name, controller_name):
         smach.StateMachine.__init__(
             self,
-            outcomes=['preempted', 'succeeded', 'aborted', 'failure'],
+            outcomes=['preempted', 'succeeded', 'aborted', 'failure', 'invalid'],
             input_keys=['target_pose'],
             output_keys=['outcome', 'message', 'path'])
 
         self._concurrency_slot = concurrency_slot
         self._planner_name = planner_name
         self._controller_name = controller_name
-
 
         with self:
             state = smach_ros.SimpleActionState(
@@ -38,7 +41,9 @@ class PlannerStateMachine(smach.StateMachine):
                 transitions={
                     'succeeded': planner_name.upper()+'_EXEC',
                     'failure': 'failure',
+                    'invalid': 'invalid',
                     'preempted': 'preempted'})
+
             state = smach_ros.SimpleActionState(
                 'move_base_flex/exe_path',
                 ExePathAction,
@@ -62,7 +67,7 @@ class PlannerStateMachine(smach.StateMachine):
 
     @cb_interface(
         output_keys=['message', 'outcome', 'path'],
-        outcomes=['succeeded', 'failure'])
+        outcomes=['succeeded', 'failure', 'preempted', 'invalid'])
     def get_path_result_cb(self, userdata, status, result):
         if result is None:  # something preempted or aborted this
             print 'result is None!'
@@ -76,6 +81,11 @@ class PlannerStateMachine(smach.StateMachine):
             return 'succeeded'
         elif result.outcome == GetPathResult.CANCELED:
             return 'preempted'
+        elif result.outcome in (GetPathResult.INVALID_START, GetPathResult.INVALID_GOAL, GetPathResult.NO_PATH_FOUND, GetPathResult.PAT_EXCEEDED):
+            # We will take PAT_EXCEEDED as a failure to get a path. The most planners currently won't give a better feedback, so if it
+            # takes too long to find a path, there might be no path.
+            print 'Planning with %s could not get any path %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+            return 'invalid'
         else:
             print 'Planning with %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
             return 'failure'
@@ -102,5 +112,5 @@ class PlannerStateMachine(smach.StateMachine):
                 print 'Execution of %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
                 return 'failure'
         else:
-            print status
+            print 'No result, received status: %s' % status
             return 'failure'

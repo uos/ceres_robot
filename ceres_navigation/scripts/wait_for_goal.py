@@ -1,38 +1,41 @@
 import rospy
 import smach
-import time
-
+import threading
 from geometry_msgs.msg import PoseStamped
 
 
 class WaitForGoal(smach.State):
+
     def __init__(self):
-        smach.State.__init__(
-            self,
-            outcomes=['succeeded', 'preempted'],
-            output_keys=['target_pose'])
-        self._global_target_pose = PoseStamped()
-        self._subscriber = None
-        self._flag_goal_received = False
+        smach.State.__init__(self, outcomes=['received_goal', 'preempted'], input_keys=[], output_keys=['target_pose'])
+        self.target_pose = PoseStamped()
+        self.signal = threading.Event()
+        self.subscriber = None
 
-    def execute(self, userdata):
-        self._flag_goal_received = False
-        self._subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_callback)
+    def execute(self, user_data):
 
-        rate = 0.3
-        while not self._flag_goal_received and not rospy.is_shutdown():
-            time.sleep(rate)
+        rospy.loginfo("Waiting for a goal...")
+        self.signal.clear()
+        self.subscriber = rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_callback)
+        while not rospy.is_shutdown() and not self.signal.is_set() and not self.preempt_requested():
+            rospy.logdebug("Waiting for a goal...")
+            self.signal.wait(1)
 
-        userdata.target_pose = self._global_target_pose
-        print "Target Pose:", self._global_target_pose.pose.position.x, self._global_target_pose.pose.position.y,\
-              self._global_target_pose.pose.position.z
-        if rospy.is_shutdown():
-          return 'preempted'
+        if self.preempt_requested() or rospy.is_shutdown():
+            self.service_preempt()
+            return 'preempted'
 
-        return 'succeeded'
+        user_data.target_pose = self.target_pose
+        pos = self.target_pose.pose.position
+        rospy.loginfo("Received goal pose: (%s, %s, %s)", pos.x, pos.y, pos.z)
+
+        return 'received_goal'
 
     def goal_callback(self, msg):
-        print "Received goal:"
-        self._global_target_pose = msg
-        self._subscriber.unregister()
-        self._flag_goal_received = True
+        rospy.logdebug("Received goal pose: %s", str(msg))
+        self.target_pose = msg
+        self.signal.set()
+
+    def request_preempt(self):
+        smach.State.request_preempt(self)
+        self.signal.set()

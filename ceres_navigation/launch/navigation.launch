@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <arg name="amcl" default="true" />
   <arg name="mapserver" default="true" />
@@ -29,7 +30,7 @@
   </node>
   
   <!-- SMACH Navigation State Machine -->
-  <node if="$(arg smach)" pkg="ceres_navigation" type="mbf_state_machine.py" name="mbf_state_machine" output="screen"/>
+  <node if="$(arg smach)" pkg="ceres_navigation" type="navigation_sm.py" name="navigation_sm" output="screen"/>
 
   <!-- RViz with config -->
   <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find ceres_navigation)/rviz/move_base_flex.rviz" />

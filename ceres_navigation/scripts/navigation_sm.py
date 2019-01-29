@@ -13,12 +13,17 @@ class Control(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(
             self,
-            outcomes=['succeeded', 'preempted', 'aborted'],
+            outcomes=['succeeded', 'preempted', 'aborted', 'failed'],
             input_keys=['path'],
-            output_keys=['outcome', 'message', 'final_pose', 'target_dist', 'target_angle']
+            output_keys=[
+                'outcome', 'message',
+                'final_pose', 'dist_to_goal', 'angle_to_goal',
+                'recovery_behavior']
         )
 
         with self:
+
+            self.userdata.recovery_behavior = None
 
             smach.StateMachine.add(
                 'EXE_PATH',
@@ -30,7 +35,8 @@ class Control(smach.StateMachine):
                 transitions={
                     'succeeded': 'succeeded',
                     'preempted': 'preempted',
-                    'aborted': 'aborted'
+                    'aborted': 'aborted',
+                    'failed': 'failed',
                 }
             )
 
@@ -38,23 +44,72 @@ class Control(smach.StateMachine):
     @smach.cb_interface(input_keys=['path'])
     def controller_goal_cb(user_data, goal):
         goal.path = user_data.path
-        goal.controller = 'eband'
+        goal.controller = 'dwa'
 
     @staticmethod
     @smach.cb_interface(
-        output_keys=['outcome', 'message', 'final_pose', 'dist_to_goal', 'angle_to_goal'],
-        outcomes=['succeeded', 'aborted', 'preempted'])
+        output_keys=['path', 'outcome', 'message', 'final_pose', 'dist_to_goal', 'angle_to_goal', 'recovery_behavior'],
+        outcomes=['succeeded', 'aborted', 'failed', 'preempted'])
     def controller_result_cb(user_data, status, result):
+        outcome_map = {
+            ExePathResult.COLLISION: 'COLLISION',
+            ExePathResult.CANCELED: 'CANCELED',
+            ExePathResult.BLOCKED_PATH: 'BLOCKED_PATH',
+            ExePathResult.FAILURE: 'FAILURE',
+            ExePathResult.INTERNAL_ERROR: 'INTERNAL_ERROR',
+            ExePathResult.INVALID_PATH: 'INVALID_PATH',
+            ExePathResult.MISSED_GOAL: 'MISSED_GOAL',
+            ExePathResult.INVALID_PLUGIN: 'INVALID_PLUGIN',
+            ExePathResult.MISSED_PATH: 'MISSED_PATH',
+            ExePathResult.NO_VALID_CMD: 'NO_VALID_CMD',
+            ExePathResult.NOT_INITIALIZED: 'NOT_INITIALIZED',
+            ExePathResult.OSCILLATION: 'OSCILLATION',
+            ExePathResult.PAT_EXCEEDED: 'PAT_EXCEEDED',
+            ExePathResult.ROBOT_STUCK: 'ROBOT_SUCK',
+            ExePathResult.TF_ERROR: 'TF_ERROR',
+            ExePathResult.SUCCESS: 'SUCCESS',
+        }
+
+        controller_aborted_map = [
+            ExePathResult.TF_ERROR,
+            ExePathResult.INTERNAL_ERROR,
+            ExePathResult.INVALID_PATH,
+            ExePathResult.NOT_INITIALIZED,
+        ]
+
+        controller_failed_map = [
+            ExePathResult.PAT_EXCEEDED,
+            ExePathResult.BLOCKED_PATH,
+            ExePathResult.FAILURE,
+            ExePathResult.MISSED_PATH,
+            ExePathResult.MISSED_GOAL,
+            ExePathResult.NO_VALID_CMD,
+            ExePathResult.OSCILLATION,
+            ExePathResult.ROBOT_STUCK,
+        ]
+
         user_data.outcome = result.outcome
         user_data.message = result.message
         user_data.final_pose = result.final_pose
         user_data.dist_to_goal = result.dist_to_goal
         user_data.angle_to_goal = result.angle_to_goal
+
+        recovery_behavior = 'clear_costmap'
         if result.outcome == ExePathResult.SUCCESS:
+            p = result.final_pose.pose.position
+            rospy.loginfo("Controller arrived at goal: (%s), %s, %s",
+                          str(p), outcome_map[result.outcome], result.message)
             return 'succeeded'
         elif result.outcome == ExePathResult.CANCELED:
+            rospy.loginfo("Controller has been canceled.")
             return 'preempted'
+        elif result.outcome in controller_failed_map:
+            rospy.logwarn("Controller failed: %s, %s", outcome_map[result.outcome], result.message)
+            user_data.recovery_behavior = recovery_behavior
+            rospy.loginfo("Set recovery behavior to %s", recovery_behavior)
+            return 'failed'
         else:
+            rospy.logfatal("Controller aborted: %s, %s", outcome_map[result.outcome], result.message)
             return 'aborted'
 
 
@@ -64,10 +119,13 @@ class Planning(smach.StateMachine):
             self,
             outcomes=['succeeded', 'preempted', 'aborted'],
             input_keys=['target_pose'],
-            output_keys=['outcome', 'message', 'path', 'cost']
+            output_keys=['outcome', 'message', 'path', 'cost', 'recovery_behavior']
         )
 
         with self:
+
+            self.userdata.recovery_behavior = None
+
             smach.StateMachine.add(
                 'GET_PATH',
                 smach_ros.SimpleActionState(
@@ -92,18 +150,22 @@ class Planning(smach.StateMachine):
 
     @staticmethod
     @smach.cb_interface(
-        output_keys=['outcome', 'message', 'path', 'cost'],
+        output_keys=['outcome', 'message', 'path', 'cost', 'recovery_behavior'],
         outcomes=['succeeded', 'preempted', 'aborted'])
     def planner_result_cb(user_data, status, result):
         user_data.message = result.message
         user_data.outcome = result.outcome
         user_data.path = result.path
         user_data.cost = result.cost
+        recovery_behavior = 'clear_costmap'
         if result.outcome == GetPathResult.SUCCESS:
             return 'succeeded'
         elif result.outcome == GetPathResult.CANCELED:
             return 'preempted'
-        return 'aborted'
+        else:
+            user_data.recovery_behavior = recovery_behavior
+            rospy.loginfo("Set recovery behavior to %s", recovery_behavior)
+            return 'aborted'
 
 
 class Recovery(smach.StateMachine):
@@ -112,11 +174,14 @@ class Recovery(smach.StateMachine):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'preempted', 'aborted'],
-            input_keys=['behavior'],
-            output_keys=['outcome', 'message']
+            input_keys=['recovery_behavior'],
+            output_keys=['outcome', 'message', 'recovery_behavior']
         )
 
         with self:
+
+            self.userdata.recovery_behavior = None
+
             smach.StateMachine.add(
                 'RECOVERY',
                 smach_ros.SimpleActionState('move_base_flex/recovery',
@@ -131,13 +196,14 @@ class Recovery(smach.StateMachine):
             )
 
     @staticmethod
-    @smach.cb_interface(input_keys=['behavior'])
+    @smach.cb_interface(input_keys=['recovery_behavior'])
     def recovery_goal_cb(user_data, goal):
-        goal.behavior = user_data.behavior
+        rospy.loginfo("Recovery behavior: %s", user_data.recovery_behavior)
+        goal.behavior = user_data.recovery_behavior
 
     @staticmethod
     @smach.cb_interface(
-        output_keys=['outcome', 'message'],
+        output_keys=['outcome', 'message', 'recovery_behavior'],
         outcomes=['succeeded', 'aborted', 'preempted'])
     def recovery_result_cb(user_data, status, result):
         if result.outcome == RecoveryResult.SUCCESS:
@@ -145,6 +211,7 @@ class Recovery(smach.StateMachine):
         elif result.outcome == RecoveryResult.CANCELED:
             return 'preempted'
         else:
+            user_data.recovery_behavior = 'rotate_recovery'
             return 'aborted'
 
 
@@ -160,7 +227,7 @@ class Replanning(smach.Concurrence):
             outcomes=['new_goal', 'succeeded', 'preempted', 'aborted'],
             default_outcome='aborted',
             input_keys=['target_pose'],
-            output_keys=['target_pose', 'path'],
+            output_keys=['target_pose', 'path', 'recovery_behavior'],
             outcome_map={
                 'new_goal': {'WAIT_FOR_GOAL': 'received_goal'},
                 'succeeded': {'PLANNING': 'succeeded'},
@@ -168,7 +235,6 @@ class Replanning(smach.Concurrence):
                               'WAIT_FOR_GOAL': 'preempted'}
             },
             child_termination_cb=Replanning.child_term_cb,
-
         )
 
         with self:
@@ -204,7 +270,8 @@ class NavigationStateMachine(smach.StateMachine):
                 transitions={
                     'succeeded': 'succeeded',
                     'preempted': 'preempted',
-                    'aborted': 'RECOVERY'
+                    'aborted': 'aborted',
+                    'failure': 'RECOVERY',
                 }
             )
 
@@ -214,7 +281,7 @@ class NavigationStateMachine(smach.StateMachine):
                 transitions={
                     'succeeded': 'PLANNING',
                     'preempted': 'preempted',
-                    'aborted': 'aborted'
+                    'aborted': 'aborted',
                 }
             )
 
@@ -226,10 +293,14 @@ class PlanToGoal(smach.StateMachine):
             self,
             outcomes=['succeeded', 'preempted', 'aborted'],
             input_keys=[],
-            output_keys=['path'],
+            output_keys=['path', 'recovery_behavior', 'target_pose'],
         )
 
         with self:
+
+            #self.userdata.path = None
+            #self.userdata.recovery_behavior = None
+
             smach.StateMachine.add(
                 'WAIT_FOR_GOAL',
                 WaitForGoal(),
@@ -257,15 +328,16 @@ class NavigateToGoal(smach.Concurrence):
     def __init__(self):
         smach.Concurrence.__init__(
             self,
-            outcomes=['new_path', 'succeeded', 'preempted'],
+            outcomes=['new_path', 'succeeded', 'preempted', 'failed'],
             default_outcome='preempted',
-            input_keys=['path'],
-            output_keys=['path'],
+            input_keys=['path', 'recovery_behavior'],
+            output_keys=['target_pose', 'recovery_behavior', 'path'],
             outcome_map={
                 'new_path': {'PLAN_TO_GOAL': 'succeeded'},
                 'succeeded': {'CONTROL': 'succeeded'},
                 'preempted': {'PLAN_TO_GOAL': 'preempted',
-                              'CONTROL': 'preempted'}
+                              'CONTROL': 'preempted'},
+                'failed': {'CONTROL': 'failed'}
             },
             child_termination_cb=NavigateToGoal.child_term_cb,
         )
@@ -298,6 +370,28 @@ def main():
                 'succeeded': 'PLAN_TO_GOAL',
                 'preempted': 'preempted',
                 'new_path': 'NAVIGATE_TO_GOAL',
+                'failed': 'RECOVERY'
+            }
+        )
+
+        smach.StateMachine.add(
+            'RECOVERY',
+            Recovery(),
+            transitions={
+                'succeeded': 'REPLANNING',
+                'preempted': 'preempted',
+                'aborted': 'RECOVERY',  # TODO solve recovery loop
+            }
+        )
+
+        smach.StateMachine.add(
+            'REPLANNING',
+            Replanning(),
+            transitions={
+                'new_goal': 'REPLANNING',
+                'succeeded': 'NAVIGATE_TO_GOAL',
+                'preempted': 'preempted',
+                'aborted': 'RECOVERY',  # davide into aborted and failed, more specific failure code and recovery
             }
         )
 

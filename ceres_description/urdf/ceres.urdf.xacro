@@ -21,21 +21,17 @@
   <xacro:property name="axis_front" value="0.14"/>
   <xacro:property name="axis_back" value="-0.14"/>
   
-  <xacro:property name="wheel_thickness" value="0.085"/>
+  <xacro:property name="wheel_thickness" value="0.025"/>
   <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.015}"/>
   <xacro:property name="wheel_radius" value="0.135"/>
   <xacro:property name="axis_height" value="-0.03"/>
   <xacro:property name="axis_right" value="${-body_width/2 - wheel_body_offset}"/>
   <xacro:property name="axis_left" value="${body_width/2 + wheel_body_offset}"/>
   <xacro:property name="axis_length" value="${body_width + 2 * wheel_body_offset}" />
-  <xacro:property name="turning_adaptation" value="0.95" />
+  <xacro:property name="turning_adaptation" value="2.95" />
 
-  <xacro:property name="bearing_width" value="0.05"/>
-  <xacro:property name="bearing_height" value="0.09"/>
-  <xacro:property name="bearing_thickness" value="0.01"/>
-
-  <xacro:property name="body_mass" value="40.0"/>
-  <xacro:property name="wheel_mass" value="3.0"/>
+  <xacro:property name="body_mass" value="25.0"/>
+  <xacro:property name="wheel_mass" value="5.0"/>
 
   <xacro:property name="imu_width" value="0.036"/>
   <xacro:property name="imu_length" value="0.038"/>
@@ -97,7 +93,6 @@
       <collision>
         <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
         <geometry>
-          <!-- mesh filename="package://ceres_description/meshes/wheel.stl"/-->
           <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
         </geometry>
       </collision>
@@ -115,11 +110,14 @@
     </joint>
 
     <gazebo reference="${name}_link">
-      <mu1>0.8</mu1>
-      <mu2>0.8</mu2>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
       <material>Gazebo/Black</material>
-      <kp>1000000</kp>
-      <kd>10</kd>
+      <kp>100000.0</kp>
+      <kd>10.0</kd>
+      <fdir1>1 0 0</fdir1>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
       <selfCollide>false</selfCollide>
     </gazebo>
   </xacro:macro>
@@ -357,8 +355,28 @@
   <xacro:imu_gazebo link="imu" imu_topic="imu/data" update_rate="100.0" stdev="${imu_stdev}" />
 
   <gazebo>
+
+    <!--plugin name="volksbot_diffdrive" filename="libgazebo_ros_diffdrive_uos.so">
+      <alwaysOn>true</alwaysOn>
+      <cmd_vel_topic_name>cmd_vel</cmd_vel_topic_name>
+      <odom_topic_name>odom</odom_topic_name>
+      <joint_states_topic_name>joint_states</joint_states_topic_name>
+      <left_front_wheel_joint>left_front_wheel_joint</left_front_wheel_joint>
+      <left_middle_wheel_joint>left_middle_wheel_joint</left_middle_wheel_joint>
+      <left_rear_wheel_joint>left_rear_wheel_joint</left_rear_wheel_joint>
+      <right_front_wheel_joint>right_front_wheel_joint</right_front_wheel_joint>
+      <right_middle_wheel_joint>right_middle_wheel_joint</right_middle_wheel_joint>
+      <right_rear_wheel_joint>right_rear_wheel_joint</right_rear_wheel_joint>
+      <wheel_separation>${axis_length}</wheel_separation>
+      <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+      <turning_adaptation>${turning_adaptation}</turning_adaptation>
+      <torque>4.0</torque>
+      <max_velocity>1.4</max_velocity>
+      <updateRate>200.0</updateRate>
+    </plugin-->
+
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-      <updateRate>100.0</updateRate>
+      <updateRate>200.0</updateRate>
       <robotNamespace>/</robotNamespace>
       <leftFrontJoint>left_front_wheel_joint</leftFrontJoint>
       <rightFrontJoint>right_front_wheel_joint</rightFrontJoint>

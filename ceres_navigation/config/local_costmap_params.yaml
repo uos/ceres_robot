@@ -25,4 +25,4 @@ local_costmap:
     z_voxels: 10
     publish_voxel_map: true
   inflation:
-    inflation_radius: 0.25
+    inflation_radius: 0.35

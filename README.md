@@ -3,8 +3,6 @@
 ![ceres_robot](docs/images/ceres_robot.jpg?raw=true "ceres_robot")
 
 ## Maintainers
-* [Julian Gaal](mailto:gjulian@uos.de)
-* [Christopher Broecker](mailto:chbroecker@uos.de)
 * [Sebastian Pütz](mailto:spuetz@uos.de)
 
 ## Installation

@@ -3,7 +3,7 @@
   <arg name="amcl" default="true" />
   <arg name="mapserver" default="true" />
   <arg name="gmapping" default="false" />
-  <arg name="rviz" default="false" />
+  <arg name="rviz" default="true" />
   <arg name="smach" default="true" />
 
   <!-- Map Server -->

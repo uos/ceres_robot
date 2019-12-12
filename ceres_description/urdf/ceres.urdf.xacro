@@ -9,7 +9,8 @@
   <xacro:include filename="$(find uos_common_urdf)/common.xacro" />
   <xacro:include filename="$(find uos_common_urdf)/urdf/imu.gazebo.urdf.xacro" />
   <xacro:include filename="$(find sick_tim)/urdf/sick_tim.urdf.xacro" />
-  
+  <xacro:include filename="$(find ceres_description)/urdf/wheel.urdf.xacro" />
+
   <xacro:property name="M_PI" value="3.14159265359"/>
   
   <xacro:property name="imu_stdev" value="0.00017" />
@@ -77,56 +78,11 @@
     <parent link="base_footprint"/>
     <child link="base_link" />
   </joint>
-  
-  <!--Wheel Macro-->
-  <xacro:macro name="wheel" params="name parent xyz">
+
+  <xacro:macro name="box_for_joint" params="name r g b color length height width *joint_pose">
     <link name="${name}_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 ${M_PI/2}" />
-        <geometry>
-          <mesh filename="package://ceres_description/meshes/wheel.stl"/>
-        </geometry>
-        <material name="black" >
-          <color rgba="0 0 0 1" />
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
-        </geometry>
-      </collision>
-      <xacro:cylinder_inertial
-        radius="${wheel_radius}"
-        length="${wheel_thickness}"
-        mass="${wheel_mass}" />
-    </link>
-
-    <joint name="${name}_joint" type="continuous">
-      <origin xyz="${xyz}" rpy="0 0 0"/>
-      <parent link="${parent}"/>
-      <child link="${name}_link"/>
-      <axis xyz="0 1 0"/>
-    </joint>
-
-    <gazebo reference="${name}_link">
-      <mu1>1.0</mu1>
-      <mu2>1.0</mu2>
-      <material>Gazebo/Black</material>
-      <kp>100000.0</kp>
-      <kd>10.0</kd>
-      <fdir1>1 0 0</fdir1>
-      <maxVel>1.0</maxVel>
-      <minDepth>0.00</minDepth>
-      <selfCollide>false</selfCollide>
-    </gazebo>
-  </xacro:macro>
-
-  
-  <xacro:macro name="box_for_joint" params="name o_x o_y o_z r_x r_y r_z r g b color length height width">
-    <link name="${name}_link">
-      <visual>
-        <origin xyz="${o_x} ${o_y} ${o_z}" rpy="${r_x} ${r_y} ${r_z}" />
+        <xacro:insert_block name="joint_pose"/>
         <geometry>
           <box size="${length} ${width} ${height}" />
         </geometry>
@@ -135,94 +91,45 @@
         </material>
       </visual>
     </link>
-  </xacro:macro>  
+  </xacro:macro>
 
-  <xacro:wheel
-    name="left_front_wheel"
-    parent="base_link"
-    xyz="${axis_front} ${axis_left} ${axis_height}" />
+  <xacro:wheel name="left_front_wheel" parent="base_link">
+    <origin xyz="${axis_front} ${axis_left} ${axis_height}" rpy="0 0 0"/>
+  </xacro:wheel>
 
-  <xacro:wheel
-    name="left_rear_wheel"
-    parent="base_link"
-    xyz="${axis_back} ${axis_left} ${axis_height}" />
+  <xacro:wheel name="left_rear_wheel" parent="base_link">
+    <origin xyz="${axis_back} ${axis_left} ${axis_height}" rpy="0 0 0" />
+  </xacro:wheel>
   
-  <xacro:wheel
-    name="right_front_wheel"
-    parent="base_link"
-    xyz="${axis_front} ${axis_right} ${axis_height}" />
-  
-  <xacro:wheel
-    name="right_rear_wheel"
-    parent="base_link"
-    xyz="${axis_back} ${axis_right} ${axis_height}" />
-  
-  <xacro:sick_tim551
-    name="laser"
-    ros_topic="/scan" />
-  
-  <xacro:box_for_joint
-    name="pico_flexx_holder1"
-    r_x="0"
-    r_y="0"
-    r_z="0"
-    o_x="0"
-    o_y="0"
-    o_z="0"
-    color="silver"
-    r="0.5"
-    g="0.5"
-    b="0.5"
-    length="0.015"
-    width="0.02"
-    height="0.02" />
-  
-  <xacro:box_for_joint
-    name="pico_flexx_holder2"
-    r_x="0"
-    r_y="0"
-    r_z="0"
-    o_x="0"
-    o_y="0"
-    o_z="0"
-    color="silver"
-    r="0.5"
-    g="0.5"
-    b="0.5"
-    length="0.015"
-    width="0.02"
-    height="0.02" />
-  
-  <xacro:box_for_joint
-    name="pico_flexx_model"
-    r_x="0"
-    r_y="0"
-    r_z="0"
-    o_x="0"
-    o_y="0"
-    o_z="0"
-    color="black"
-    r="0"
-    g="0"
-    b="0"
-    length="0.01"
-    width="0.067"
-    height="0.02"/>
+  <xacro:wheel name="right_front_wheel" parent="base_link">
+    <origin xyz="${axis_front} ${axis_right} ${axis_height}" rpy="0 0 0"/>
+  </xacro:wheel>
 
- <!-- 
-  <xacro:box_for_joint
-    name="pico_flexx_bottom_plate"
-    r_x="0"
-    r_y="0"
-    r_z="0"
-    color="silver"
-    r="0.5"
-    g="0.5"
-    b="0.5"
-    length="0.01"
-    width="0.065"
-    height="0.002"/>
-  /-->
+  <xacro:wheel name="right_rear_wheel" parent="base_link">
+    <origin xyz="${axis_back} ${axis_right} ${axis_height}" rpy="0 0 0" />
+  </xacro:wheel>
+
+  <xacro:sick_tim551 name="laser" ros_topic="/scan" />
+  
+  <xacro:box_for_joint name="pico_flexx_holder1" color="silver" r="0.5" g="0.5" b="0.5"
+                       length="0.015" width="0.02" height="0.02">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:box_for_joint>
+  
+  <xacro:box_for_joint name="pico_flexx_holder2" color="silver" r="0.5" g="0.5" b="0.5"
+                       length="0.015" width="0.02" height="0.02">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:box_for_joint>
+  
+  <xacro:box_for_joint name="pico_flexx_model" color="black" r="0" g="0" b="0"
+                       length="0.01" width="0.067" height="0.02">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:box_for_joint>
+
+  <!--xacro:box_for_joint name="pico_flexx_bottom_plate" color="silver" r="0.5" g="0.5" b="0.5"
+                      length="0.01" width="0.065" height="0.002">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:box_for_joint-->
 
   <link name="pico_flexx_optical_frame" type="fixed">
     <visual>
@@ -324,70 +231,26 @@
   <joint name="em_body_to_base_joint" type="fixed">
     <parent link="base_link" />
     <child link="em_body" />
-    <origin
-      xyz=" ${-body_length/2}
-            0.03
-           -0.05
-          " />
+    <origin xyz="${-body_length/2} 0.03 -0.05" />
   </joint>
   
   <joint name="em_button_to_em_body_joint" type="fixed">
     <parent link="em_body" />
     <child link="em_button" />
-    <origin
-      xyz=" ${-em_button_depth}
-            -0.02
-            0 
-          " />
+    <origin xyz=" ${-em_button_depth} -0.02 0" />
   </joint>
   
   <joint name="imu_to_base_joint" type="fixed">
     <parent link="base_link" />
     <child link="imu" />
-    <origin
-      xyz=" ${imu_offset_x}
-            ${imu_offset_y}
-            ${imu_offset_z}"
-      rpy="${M_PI} 0 ${M_PI/2.0}" />
+    <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${M_PI} 0 ${M_PI/2.0}" />
   </joint>
   
   <!-- inertial measurement unit for gazebo -->
   <xacro:imu_gazebo link="imu" imu_topic="imu/data" update_rate="100.0" stdev="${imu_stdev}" />
 
   <gazebo>
-
-    <!--plugin name="volksbot_diffdrive" filename="libgazebo_ros_diffdrive_uos.so">
-      <alwaysOn>true</alwaysOn>
-      <cmd_vel_topic_name>cmd_vel</cmd_vel_topic_name>
-      <odom_topic_name>odom</odom_topic_name>
-      <joint_states_topic_name>joint_states</joint_states_topic_name>
-      <left_front_wheel_joint>left_front_wheel_joint</left_front_wheel_joint>
-      <left_middle_wheel_joint>left_middle_wheel_joint</left_middle_wheel_joint>
-      <left_rear_wheel_joint>left_rear_wheel_joint</left_rear_wheel_joint>
-      <right_front_wheel_joint>right_front_wheel_joint</right_front_wheel_joint>
-      <right_middle_wheel_joint>right_middle_wheel_joint</right_middle_wheel_joint>
-      <right_rear_wheel_joint>right_rear_wheel_joint</right_rear_wheel_joint>
-      <wheel_separation>${axis_length}</wheel_separation>
-      <wheel_diameter>${2*wheel_radius}</wheel_diameter>
-      <turning_adaptation>${turning_adaptation}</turning_adaptation>
-      <torque>4.0</torque>
-      <max_velocity>1.4</max_velocity>
-      <updateRate>200.0</updateRate>
-    </plugin-->
-
-    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-      <updateRate>200.0</updateRate>
-      <robotNamespace>/</robotNamespace>
-      <leftFrontJoint>left_front_wheel_joint</leftFrontJoint>
-      <rightFrontJoint>right_front_wheel_joint</rightFrontJoint>
-      <leftRearJoint>left_rear_wheel_joint</leftRearJoint>
-      <rightRearJoint>right_rear_wheel_joint</rightRearJoint>
-      <wheelSeparation>${axis_length}</wheelSeparation>
-      <wheelDiameter>${2*wheel_radius}</wheelDiameter>
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <torque>20</torque>
-      <topicName>cmd_vel</topicName>
-      <broadcastTF>false</broadcastTF>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
     </plugin>
   </gazebo>
 

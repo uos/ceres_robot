@@ -1,46 +1,11 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- Gazebo Parameters -->
-  <arg name="gui" default="true"/>
-  <arg name="paused" default="false"/>
-  <arg name="debug" default="false"/>
-  <arg name="verbose" default="false"/>
-  <arg name="world" value="$(find uos_gazebo_worlds)/worlds/avz_collada.world"/> 
-
-  <!-- Start Gazebo with the given parameters -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(arg world)"/>
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="$(arg gui)"/>
-    <arg name="headless" value="false"/> 
-    <arg name="recording" value="false"/>
-    <arg name="debug" value="$(arg debug)"/>
-    <arg name="verbose" value="$(arg verbose)"/>
+  <include file="$(find ceres_gazebo)/launch/ceres_gazebo.launch">
+    <arg name="world" value="$(find uos_gazebo_worlds)/worlds/avz_collada.world"/> 
+    <arg name="x" value="0"/>
+    <arg name="y" value="0"/>
+    <arg name="z" value="0"/>
+    <arg name="yaw" value="0"/>
   </include>
-  
-  <!-- Push robot_description to factory and spawn robot in gazebo -->
-  <include file="$(find ceres_gazebo)/launch/spawn_ceres.launch" />
-  
-  <!-- EKF -->
-  <include file="$(find ceres_gazebo)/launch/ekf.launch"/>
-
-  <!-- Robot State Publisher -->
-  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher">
-    <param name="publish_frequency" type="double" value="150.0" />
-    <param name="tf_prefix" type="string" value="" />
-  </node>
-
-  <!-- Joint State Publisher -->
-  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
-    <rosparam>
-      zeros:
-        pico_flex_angle : 0.0
-    </rosparam>
-  </node>
-
-  <!-- Fake Calibration -->
-  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
-    args="pub /calibrated std_msgs/Bool true" />
-
 </launch>
+

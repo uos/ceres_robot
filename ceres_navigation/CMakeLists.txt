@@ -11,7 +11,7 @@ install(PROGRAMS
   scripts/planner_sm.py
   scripts/smach_polyfill.py
   scripts/wait_for_goal.py
-  scripts/navigation.py
+  scripts/navigation_sm.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

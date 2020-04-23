@@ -51,6 +51,7 @@
   <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="$(arg respawn_gazebo)" output="screen"
         args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world)">
     <remap from="/ceres_velocity_controller/cmd_vel" to="/cmd_vel"/>
+    <remap from="/ceres_velocity_controller/odom" to="/odom"/>
     <param name="/ceres_velocity_controller/enable_odom_tf" value="true"/>
   </node>
 

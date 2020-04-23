@@ -1,4 +1,8 @@
 <launch>
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+
   <!--- Run AMCL -->
   <node pkg="amcl" type="amcl" name="amcl">
     <!-- Publish scans from best pose at a max of 10 Hz -->
@@ -32,6 +36,9 @@
     <param name="recovery_alpha_slow" value="0.0"/>
     <param name="recovery_alpha_fast" value="0.0"/>
     <param name="global_frame" value="map"/>
+    <param name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
   </node>
 </launch>
 

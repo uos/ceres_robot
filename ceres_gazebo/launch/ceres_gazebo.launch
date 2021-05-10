@@ -75,7 +75,7 @@
   </include>
 
   <!-- EKF -->
-  <include file="$(find ceres_gazebo)/launch/robot_pose_ekf.launch"/>
+  <!-- <include file="$(find ceres_gazebo)/launch/robot_pose_ekf.launch"/> -->
 
   <!-- Robot state publisher -->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">

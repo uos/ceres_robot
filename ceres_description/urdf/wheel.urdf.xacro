@@ -8,6 +8,9 @@
                 <geometry>
                     <mesh filename="package://ceres_description/meshes/wheel.stl"/>
                 </geometry>
+                <material name="wheelcolor" >
+                    <color rgba="0.1 0.1 0.1 1" />
+                </material>
             </visual>
 
             <collision>

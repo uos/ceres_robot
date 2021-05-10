@@ -23,7 +23,7 @@
   <xacro:property name="axis_back" value="-0.14"/>
   
   <xacro:property name="wheel_thickness" value="0.025"/>
-  <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.015}"/>
+  <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.035}"/>
   <xacro:property name="wheel_radius" value="0.135"/>
   <xacro:property name="axis_height" value="-0.03"/>
   <xacro:property name="axis_right" value="${-body_width/2 - wheel_body_offset}"/>

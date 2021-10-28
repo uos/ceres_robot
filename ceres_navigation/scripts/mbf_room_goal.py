@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import smach
 import smach_ros
@@ -93,7 +93,7 @@ class MBFStateMachine(smach.StateMachine):
     def recovery_goal_cb(self, userdata, goal):
         # TODO implement a more clever way to call the right behavior. Currently cycles through all behaviors
         behavior = self._recovery_behaviors[userdata.recovery_behavior_index]
-        print 'RECOVERY BEHAVIOR:', behavior
+        print("RECOVERY BEHAVIOR:", behavior)
         goal.behavior = behavior
         userdata.recovery_behavior_index += 1
         if userdata.recovery_behavior_index >= len(self._recovery_behaviors):

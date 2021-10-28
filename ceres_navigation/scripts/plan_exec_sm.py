@@ -77,7 +77,7 @@ class PlanExecStateMachine(smach.Concurrence):
             if outcome_map[planner.upper()] != 'invalid':
                 invalid = False
         if invalid:
-            print 'No path was found.'
+            print("No path was found.")
             return 'invalid'
 
         aborted_or_preempted = True

@@ -37,7 +37,7 @@ class GetPoses(smach.State):
     def execute(self, userdata):
         room = self.get_room(userdata.target_pose)
         if room is None:
-            print 'The given pose does not lay in any room! Just navigating to it..'
+            print("The given pose does not lay in any room! Just navigating to it..")
             return 'room_not_found'
 
         rospy.wait_for_service('/move_base_flex/check_pose_cost')
@@ -65,7 +65,7 @@ class GetPoses(smach.State):
                 if res.state == CheckPoseResponse.FREE:
                     poses.append(pose)
             except rospy.ServiceException, e:
-                print 'Service call failed: %s' % str(e)
+                print("Service call failed: %s" % str(e))
                 return 'failure'
         userdata.poses = poses
 

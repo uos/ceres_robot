@@ -19,7 +19,8 @@
     <!-- translational noise while translating -->
     <param name="odom_alpha3" value="0.01"/>
     <!-- translational noise while rotating -->
-    <!-- high for diff drive because of schlupf -->
+    <!-- high for diff drive because unexpected jumps when rotating -->
+    <!-- worst case: rubber ground -->
     <param name="odom_alpha4" value="0.4"/>
     <!-- translational related noise param. only used for odom_model_type=omni -->
     <param name="odom_alpha5" value="0.05"/>

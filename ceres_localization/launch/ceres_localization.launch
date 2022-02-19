@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="amcl" default="true" />
+    <arg name="mapserver" default="true" />
+    <arg name="gmapping" default="false" />
+
+    <!-- EKF -->
+    <include file="$(find ceres_localization)/launch/ekf.launch" />
+
+    <!-- Map Server -->
+    <include if="$(arg mapserver)" file="$(find ceres_localization)/launch/map_server.launch" />
+        
+    <!-- Run AMCL -->
+    <include if="$(arg amcl)" file="$(find ceres_localization)/launch/amcl.launch" />
+
+    <!-- Gmapping -->
+    <include if="$(arg gmapping)" file="$(find ceres_localization)/launch/gmapping.launch" />
+
+</launch>

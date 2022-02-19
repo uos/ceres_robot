@@ -1,5 +1,0 @@
-<launch>
-  <arg name="map" default="$(find ceres_navigation)/maps/avz_6_floor_gazebo.yaml"/>
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
-</launch>
-

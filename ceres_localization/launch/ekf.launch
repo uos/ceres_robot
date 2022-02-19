@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-
   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen">
     <param name="freq" value="100.0"/>
     <param name="sensor_timeout" value="1.0"/>

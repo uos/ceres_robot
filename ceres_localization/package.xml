@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package>
+  <name>ceres_localization</name>
+  <version>0.0.0</version>
+  <description>Sets up the localization stack for ceres</description>
+
+  <maintainer email="amock@uos.de">Alexander Mock</maintainer>
+
+  <license>BSD</license>
+  <author email="amock@uos.de">Alexander Mock</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>smach_ros</run_depend>
+  <run_depend>smach_utils</run_depend>
+
+  <run_depend>ceres_bringup</run_depend>
+  <run_depend>ceres_description</run_depend>
+
+  <run_depend>move_base_flex</run_depend>
+  <run_depend>move_base</run_depend>
+
+  <run_depend>sbpl_lattice_planner</run_depend>
+  <run_depend>global_planner</run_depend>
+
+  <run_depend>eband_local_planner</run_depend>
+  <run_depend>dwa_local_planner</run_depend>
+
+  <run_depend>rotate_recovery</run_depend>
+  <run_depend>clear_costmap_recovery</run_depend>
+  <run_depend>moveback_recovery</run_depend>
+
+</package>

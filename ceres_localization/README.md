@@ -41,11 +41,17 @@ You should preferably put the roboter modell in a quite empty room.
 
 open a new terminal
 
-### 1. Start the localization launchfall
+### 1. Start the localization launch-file
 
 ```
 roslaunch ceres_localization ceres_localization.launch
 ```
+If the amcl package cannot be found, you will have to install it first.
+
+```
+sudo apt install ros-noetic-amcl
+```
+
 ### 2. Open RViz
 open a new terminal and then open RViz
 ```
@@ -120,7 +126,7 @@ You can look up your roboter´s ROS_MASTER_URI in the roscore directory in the t
 
 ### 5. Make sure the map you need is on the roboter
 
- It should lay in the ceres_localization/maps folder
+ It should lay in the ceres_localization/maps folder.
  ```
  (on the roboter)
 
@@ -148,7 +154,7 @@ You will find the name of the map in the third line. If it is the right one, lea
 If the mape name is wrong, change it first. By presseng `i` you can open an editing mode and then change the map name. When you have finished, press `Esc`, then type `:w` to save the changes and `:q` to close the editing programm.
 
 ### Now you can continue with the tutorial above (from Localization).
-! Start your launchfalls on your roboter, e.g. in debug !
+! Start your launch-files on your roboter, e.g. in debug !
 
 ! Start RViz in the terminal with the export commands !
 

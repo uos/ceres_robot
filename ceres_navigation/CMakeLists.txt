@@ -1,19 +1,21 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(ceres_navigation)
 
-find_package(catkin REQUIRED)
-catkin_package()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-install(PROGRAMS
-  scripts/mbf_move_base_action.py
-  scripts/mbf_state_machine.py
-  scripts/plan_exec_sm.py
-  scripts/planner_sm.py
-  scripts/smach_polyfill.py
-  scripts/wait_for_goal.py
-  scripts/navigation_sm.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(ceres_localization REQUIRED)
+find_package(nav2_common REQUIRED)
+find_package(navigation2 REQUIRED)
+
+install(DIRECTORY launch cfg
+  DESTINATION share/${PROJECT_NAME}
 )
 
-install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+ament_export_dependencies(ceres_localization)
 
+
+ament_package()

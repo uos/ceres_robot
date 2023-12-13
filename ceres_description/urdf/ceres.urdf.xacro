@@ -6,14 +6,15 @@
   xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
   name="ceres">
 
-  <xacro:include filename="$(find uos_common_urdf)/common.xacro" />
-  <xacro:include filename="$(find uos_common_urdf)/urdf/imu.gazebo.urdf.xacro" />
+  <xacro:include filename="$(find ceres_description)/urdf/common.xacro" />
+  <xacro:include filename="$(find ceres_description)/urdf/imu.gazebo.urdf.xacro" />
   <xacro:include filename="$(find sick_tim)/urdf/sick_tim.urdf.xacro" />
   <xacro:include filename="$(find ceres_description)/urdf/wheel.urdf.xacro" />
+  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
 
   <xacro:property name="M_PI" value="3.14159265359"/>
   
-  <xacro:property name="imu_stdev" value="0.00017" />
+  <xacro:property name="imu_stdev" value="0.0001" />
   
   <xacro:property name="body_height" value="0.15"/>
   <xacro:property name="body_length" value="0.38"/>
@@ -22,9 +23,9 @@
   <xacro:property name="axis_front" value="0.14"/>
   <xacro:property name="axis_back" value="-0.14"/>
   
-  <xacro:property name="wheel_thickness" value="0.025"/>
+  <xacro:property name="wheel_thickness" value="0.08"/>
   <xacro:property name="wheel_body_offset" value="${wheel_thickness/2 + 0.035}"/>
-  <xacro:property name="wheel_radius" value="0.135"/>
+  <xacro:property name="wheel_radius" value="0.125"/>
   <xacro:property name="axis_height" value="-0.03"/>
   <xacro:property name="axis_right" value="${-body_width/2 - wheel_body_offset}"/>
   <xacro:property name="axis_left" value="${body_width/2 + wheel_body_offset}"/>
@@ -79,20 +80,6 @@
     <child link="base_link" />
   </joint>
 
-  <xacro:macro name="box_for_joint" params="name r g b color length height width *joint_pose">
-    <link name="${name}_link">
-      <visual>
-        <xacro:insert_block name="joint_pose"/>
-        <geometry>
-          <box size="${length} ${width} ${height}" />
-        </geometry>
-        <material name="${color}">
-          <color rgba="${r} ${g} ${b} 1"/>
-        </material>
-      </visual>
-    </link>
-  </xacro:macro>
-
   <xacro:wheel name="left_front_wheel" parent="base_link">
     <origin xyz="${axis_front} ${axis_left} ${axis_height}" rpy="0 0 0"/>
   </xacro:wheel>
@@ -114,8 +101,11 @@
   <joint name="sick_to_base_joint" type="fixed">
     <parent link="base_link" />
     <child link="laser_mount_link" />
-    <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2 - 0.015}"/>
+    <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2 + 0.05}"/>
   </joint>
+  <xacro:VLP-16 topic="/velodyne_points" gpu="true">
+    <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2}"/>
+  </xacro:VLP-16>
   
   <link name="imu">
     <visual>
@@ -129,58 +119,61 @@
     </visual>
   </link>
   
-  <link name="em_body">
-    <visual>
-      <origin xyz="0 0 0" rpy="${M_PI/2} 0 ${M_PI/2}" />
-      <geometry>
-        <box size="${em_body_length} ${em_body_width} ${em_body_height}"/>
-      </geometry>
-      <material name="yellow">
-        <color rgba="1 1 0 1" />
-      </material>
-    </visual>
-  </link>
- 
-  <link name="em_button">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 ${M_PI/2} 0"/>
-      <geometry>
-        <cylinder length="${em_button_depth}" radius="${em_button_radius}"/>
-      </geometry>
-      <material name="red">
-        <color rgba="1 0 0 1"/>
-      </material>
-    </visual>
-  </link>
- 
-  <joint name="em_body_to_base_joint" type="fixed">
-    <parent link="base_link" />
-    <child link="em_body" />
-    <origin xyz="${-body_length/2} 0.03 -0.05" />
-  </joint>
-  
-  <joint name="em_button_to_em_body_joint" type="fixed">
-    <parent link="em_body" />
-    <child link="em_button" />
-    <origin xyz=" ${-em_button_depth} -0.02 0" />
-  </joint>
-  
   <joint name="imu_to_base_joint" type="fixed">
     <parent link="base_link" />
     <child link="imu" />
-    <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${M_PI} 0 ${M_PI/2.0}" />
+    <!-- <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${M_PI} 0 ${M_PI/2.0}" /> -->
+    <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="0 0 0" />
   </joint>
   
   <!-- inertial measurement unit for gazebo -->
-  <xacro:imu_gazebo link="imu" imu_topic="imu/data" update_rate="100.0" stdev="${imu_stdev}" />
+  <xacro:imu_gazebo link="imu" imu_topic="/imu/data_raw" update_rate="50.0" stdev="${imu_stdev}" />
 
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
+      <!-- <ros>
+          <namespace>/demo</namespace>
+          <argument>cmd_vel:=cmd_demo</argument>
+          <argument>odom:=odom_demo</argument>
+        </ros> -->
+      <num_wheel_pairs>2</num_wheel_pairs>
+      <!-- wheels0 -->
+        <left_joint>left_front_wheel</left_joint>
+        <right_joint>right_front_wheel</right_joint>
+
+        <!-- wheels1-->
+        <left_joint>left_rear_wheel</left_joint>
+        <right_joint>right_rear_wheel</right_joint>
+
+         <!-- kinematics -->
+        <wheel_separation>${axis_length}</wheel_separation>
+        <wheel_separation>${axis_length}</wheel_separation>
+  
+
+        <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+        <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+
+        <!-- limits -->
+        <max_wheel_torque>5000</max_wheel_torque>
+        <max_wheel_acceleration>3.0</max_wheel_acceleration>
+
+        <!-- Convariance -->
+        <covariance_x>0.001</covariance_x>
+        <covariance_y>0.001</covariance_y>
+        <covariance_yaw>0.001</covariance_yaw>
+        
+        <!-- output -->
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>false</publish_odom_tf>
+        <publish_wheel_tf>true</publish_wheel_tf>
+
+        <odometry_frame>odom</odometry_frame>
+        <robot_base_frame>base_link</robot_base_frame>
     </plugin>
   </gazebo>
 
   <!-- publish ground truth for pose of base_footprint -->
-  <gazebo>
+  <!-- <gazebo>
     <plugin name="base_footprint_controller" filename="libgazebo_ros_p3d.so">
       <alwaysOn>true</alwaysOn>
       <updateRate>30.0</updateRate>
@@ -190,6 +183,6 @@
       <frameName>map</frameName>
       <interface:position name="base_footprint_p3d_position_iface" />
     </plugin>
-  </gazebo>
+  </gazebo> -->
 
 </robot>

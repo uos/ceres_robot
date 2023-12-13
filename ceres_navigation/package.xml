@@ -1,33 +1,20 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>ceres_navigation</name>
-  <version>0.5.0</version>
-  <description>Sets up the navigation stack for ceres using Move Base Flex.</description>
-
-  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
-
+  <version>2.0.0</version>
+  <description>The ceres_navigation package</description>
+  <maintainer email="imitschke@uos.de">Isaak Ihorst</maintainer>
   <license>BSD</license>
-  <author email="spuetz@uos.de">Sebastian Pütz</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <run_depend>smach_ros</run_depend>
-  <run_depend>smach_utils</run_depend>
+  <depend>ceres_localization</depend>
+  <depend>nav2_common</depend>
+  <depend>navigation2</depend>
 
-  <run_depend>ceres_bringup</run_depend>
-  <run_depend>ceres_description</run_depend>
 
-  <run_depend>move_base_flex</run_depend>
-  <run_depend>move_base</run_depend>
-
-  <run_depend>sbpl_lattice_planner</run_depend>
-  <run_depend>global_planner</run_depend>
-
-  <run_depend>eband_local_planner</run_depend>
-  <run_depend>dwa_local_planner</run_depend>
-
-  <run_depend>rotate_recovery</run_depend>
-  <run_depend>clear_costmap_recovery</run_depend>
-  <run_depend>moveback_recovery</run_depend>
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

@@ -1,3 +1,0 @@
-global_costmap:
-  update_frequency: 3.0
-  static_map: true

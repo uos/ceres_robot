@@ -1,11 +1,19 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(ceres_localization)
 
-find_package(catkin REQUIRED)
-catkin_package()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-# install(PROGRAMS
-#     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(robot_localization REQUIRED)
 
-install(DIRECTORY launch/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+install(DIRECTORY launch cfg
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_export_dependencies(robot_localization)
+
+
+ament_package()

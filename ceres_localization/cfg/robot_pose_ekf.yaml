@@ -1,0 +1,16 @@
+### ekf config file ###
+# /**:
+#     ros__parameters:
+#         use_sim_time: true
+
+robot_pose_ekf_node:
+    ros__parameters:
+        freq: 60.0
+        output_frame: odom_combinded
+        base_footprint_frame: base_footprint
+        sensor_timeout: 1.0
+        odom_used: true
+        imu_used: true
+        vo_used: false
+        gps_used: false
+

@@ -1,21 +1,27 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>ceres_gazebo</name>
-  <version>1.0.0</version>
-  <description>
-    Launch files for starting up Ceres in the Gazebo simulator.
-  </description>
-  <author email="hjanott@uos.de">Hannes Janott</author>
-  <author email="spuetz@uos.de">Sebastian Pütz</author>
-  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
+  <version>2.0.0</version>
+  <description>Launch files for starting up Ceres in the Gazebo simulator.</description>
+  <maintainer email="imitschke@uos.de">Isaak Ihorst</maintainer>
   <license>BSD</license>
 
-  <run_depend>ceres_description</run_depend>
-  <run_depend>controller_manager</run_depend>
-  <run_depend>diffdrive_gazebo_plugin</run_depend>
-  <run_depend>gazebo_ros_control</run_depend>
-  <run_depend>robot_state_publisher</run_depend>
-  <run_depend>uos_gazebo_worlds</run_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>ceres_description</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <gazebo_ros gazebo_model_path="${prefix}/models" />
+  </export>
 </package>

@@ -28,8 +28,8 @@
         <gazebo reference="${name}_link">
             <mu1 value="1.0"/>
             <mu2 value="1.0"/>
-            <kp value="10000000.0" />
-            <kd value="1.0" />
+            <!-- <kp value="10000000.0" />
+            <kd value="1.0" /> -->
             <fdir1 value="1 0 0"/>
             <material>Gazebo/DarkGrey</material>
         </gazebo>
@@ -41,7 +41,7 @@
             <axis xyz="0 1 0" rpy="0 0 0" />
         </joint>
 
-        <transmission name="${name}_trans" type="SimpleTransmission">
+        <!-- <transmission name="${name}_trans" type="SimpleTransmission">
             <type>transmission_interface/SimpleTransmission</type>
             <actuator name="${name}_motor">
                 <mechanicalReduction>7</mechanicalReduction>
@@ -50,6 +50,6 @@
             <joint name="${name}">
                 <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
             </joint>
-        </transmission>
+        </transmission> -->
     </xacro:macro>
 </robot>

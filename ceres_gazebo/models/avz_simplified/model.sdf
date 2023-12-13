@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+<model name="avz_simplified">
+  <static>true</static>
+  <link name="link">
+    <collision name="collision">
+      <geometry>
+        <mesh>
+          <scale>1 1 1</scale>
+          <uri>model://avz_simplified/meshes/avz_neu_no-roof_no-floor_no-lamps_simplified.stl</uri>
+        </mesh>
+      </geometry>
+    </collision>
+    <visual name="visual">
+      <geometry>
+        <mesh>
+          <scale>1 1 1</scale>
+          <uri>model://avz_simplified/meshes/avz_neu_no-roof_no-floor_no-lamps_simplified.stl</uri>
+        </mesh>
+      </geometry>
+    </visual>
+  </link>
+</model>
+</sdf>

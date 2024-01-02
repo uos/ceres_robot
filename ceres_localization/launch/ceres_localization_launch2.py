@@ -11,7 +11,6 @@ from launch.actions import DeclareLaunchArgument
 
 
 def generate_launch_description():
-
     is_sim = LaunchConfiguration('is_sim')
     is_sim_arg = DeclareLaunchArgument(
         'is_sim',
@@ -27,4 +26,4 @@ def generate_launch_description():
             output='screen',
             parameters=[{"use_sim_time" : is_sim},os.path.join(get_package_share_directory("ceres_localization"), 'cfg', 'ekf.yaml')],
            ),
-])
+        ])

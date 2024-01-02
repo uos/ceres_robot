@@ -58,7 +58,9 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
-        parameters=[{'use_sim_time': True, "publish_frequency": 100.0}, robot_description],
+        parameters=[{
+            'use_sim_time': True, 
+            "publish_frequency": 100.0}, robot_description],
     )
 
     gzserver = IncludeLaunchDescription(

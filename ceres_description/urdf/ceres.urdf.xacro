@@ -131,11 +131,7 @@
 
   <gazebo>
     <plugin name='skid_steer_drive' filename='libgazebo_ros_diff_drive.so'>
-      <!-- <ros>
-          <namespace>/demo</namespace>
-          <argument>cmd_vel:=cmd_demo</argument>
-          <argument>odom:=odom_demo</argument>
-        </ros> -->
+      
       <num_wheel_pairs>2</num_wheel_pairs>
       <!-- wheels0 -->
         <left_joint>left_front_wheel</left_joint>
@@ -171,18 +167,5 @@
         <robot_base_frame>base_link</robot_base_frame>
     </plugin>
   </gazebo>
-
-  <!-- publish ground truth for pose of base_footprint -->
-  <!-- <gazebo>
-    <plugin name="base_footprint_controller" filename="libgazebo_ros_p3d.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>30.0</updateRate>
-      <bodyName>base_footprint</bodyName>
-      <topicName>base_footprint_pose_ground_truth</topicName>
-      <gaussianNoise>0.0</gaussianNoise>
-      <frameName>map</frameName>
-      <interface:position name="base_footprint_p3d_position_iface" />
-    </plugin>
-  </gazebo> -->
 
 </robot>

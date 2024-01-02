@@ -41,15 +41,5 @@
             <axis xyz="0 1 0" rpy="0 0 0" />
         </joint>
 
-        <!-- <transmission name="${name}_trans" type="SimpleTransmission">
-            <type>transmission_interface/SimpleTransmission</type>
-            <actuator name="${name}_motor">
-                <mechanicalReduction>7</mechanicalReduction>
-                <hardwareInterface>VelocityJointInterface</hardwareInterface>
-            </actuator>
-            <joint name="${name}">
-                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-            </joint>
-        </transmission> -->
     </xacro:macro>
 </robot>

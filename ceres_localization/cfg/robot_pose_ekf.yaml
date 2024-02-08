@@ -6,7 +6,7 @@
 robot_pose_ekf_node:
     ros__parameters:
         freq: 60.0
-        output_frame: odom_combinded
+        output_frame: odom
         base_footprint_frame: base_footprint
         sensor_timeout: 1.0
         odom_used: true

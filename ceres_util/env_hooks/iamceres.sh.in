@@ -2,5 +2,5 @@
 
 if $IAMCERES ; then
     echo 'IAMCERES'
-    export FASTRTPS_DEFAULT_PROFILES_FILE=@CMAKE_INSTALL_PREFIX@/config/@PROJECT_NAME@/config/fastrtps.xml
+    export FASTRTPS_DEFAULT_PROFILES_FILE=@CMAKE_INSTALL_PREFIX@/share/@PROJECT_NAME@/config/fastrtps.xml
 fi

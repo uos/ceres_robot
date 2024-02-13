@@ -1,3 +1,6 @@
 # CERES FASTRTPS CONFIG
-echo 'IAMCERES'
-export FASTRTPS_DEFAULT_PROFILES_FILE=@CMAKE_INSTALL_PREFIX@/config/@PROJECT_NAME@/config/fastrtps.xml
+
+if [ -n "${IAMCERES}" ]
+    echo 'IAMCERES'
+    export FASTRTPS_DEFAULT_PROFILES_FILE=@CMAKE_INSTALL_PREFIX@/config/@PROJECT_NAME@/config/fastrtps.xml
+fi

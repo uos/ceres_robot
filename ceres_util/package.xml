@@ -1,17 +1,16 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>ceres_util</name>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <description>The ceres_util package</description>
-
-  <maintainer email="spuetz@uos.de">Sebastian Pütz</maintainer>
-  <maintainer email="gjulian@uos.de">Julian Gaal</maintainer>
-  <maintainer email="chbroecker@uos.de">Christopher Broecker</maintainer>
-
+  <author email="amock@uos.de">Alexander Mock</author>
+  <maintainer email="amock@uos.de">Alexander Mock</maintainer>
   <license>BSD</license>
 
-  <author email="gjulian@uos.de">Julian Gaal</author>
-  <author email="chbroecker@uos.de">Christopher Broecker</author>
-  <author email="spuetz@uos.de">Sebastian Pütz</author>
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

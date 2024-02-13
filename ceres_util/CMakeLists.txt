@@ -7,10 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-
-if($ENV{IAMCERES})
-  ament_environment_hooks(env_hooks/iamceres.sh.in)
-endif()
+ament_environment_hooks(env_hooks/iamceres.sh.in)
 
 install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}

@@ -1,0 +1,17 @@
+sick_driver:
+  ros__parameters:
+    hostname: ""
+    port: "2112"
+    time_limit: 5
+    subscribe_datagram: false
+    device_number: 0
+    range_min: 0.05
+    range_max: 25.0
+    time_increment: 0.000061722
+    min_ang: -2.35619449019
+    max_ang: 2.35619449019
+    intensity: true
+    skip: 0
+    frame_id: "laser"
+    time_offset: -0.001
+    publish_datagram: false

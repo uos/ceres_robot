@@ -11,7 +11,7 @@ find_package(ceres_localization REQUIRED)
 find_package(nav2_common REQUIRED)
 find_package(navigation2 REQUIRED)
 
-install(DIRECTORY launch 
+install(DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 

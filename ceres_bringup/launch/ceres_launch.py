@@ -16,7 +16,6 @@ def generate_launch_description():
 
     config_dir = os.path.join(get_package_share_directory('ceres_bringup'), 'config')
 
-
     # Get URDF via xacro
     robot_description_content = Command(
         [
@@ -46,8 +45,6 @@ def generate_launch_description():
             'use_sim_time': True, 
             "publish_frequency": 100.0}, robot_description],
     )
-
-
 
     ekf = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -79,6 +76,25 @@ def generate_launch_description():
             }.items()
         )
     
+    vlp16 = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ceres_bringup'), 'launch', 'velodyne_launch.py')
+            ),
+        )
+
+    sick_tim = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ceres_bringup'), 'launch', 'sick_tim_launch.py')
+            ),
+        )
+    
+    cam_nexigo = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ceres_bringup'), 'launch', 'nexigo_launch.py')
+            ),
+        )
+    
+    
     imufilter = Node(
             package='imu_filter_madgwick',
             executable='imu_filter_madgwick_node',
@@ -93,5 +109,8 @@ def generate_launch_description():
     ld.add_action(volksbot_driver)
     ld.add_action(ekf)
     ld.add_action(phidgets_imu)
+    ld.add_action(sick_tim)
+    ld.add_action(vlp16)
+    # ld.add_action(cam_nexigo)
 
     return ld

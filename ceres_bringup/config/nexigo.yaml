@@ -1,0 +1,13 @@
+/**:
+    ros__parameters:
+      video_device: "/dev/video0"
+      framerate: 60.0
+      io_method: "mmap"
+      frame_id: "camera"
+      pixel_format: "yuyv2rgb"  # see usb_cam/supported_formats for list of supported formats
+      av_device_format: "YUV422P"
+      image_width: 1920
+      image_height: 1080
+      camera_name: "cam1"
+      camera_info_url: "package://ceres_bringup/config/nexigo_camera_params.yaml"
+      

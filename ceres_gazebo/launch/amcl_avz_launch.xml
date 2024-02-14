@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+<include file="$(find-pkg-share ceres_localization)/launch/amcl_launch.py">
+    <arg name="map" value="$(find-pkg-share uos_maps)/maps/avz.yaml" />
+    <arg name="use_sim_time" value="True" />
+</include>
+
+</launch>

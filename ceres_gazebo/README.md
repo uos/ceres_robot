@@ -6,8 +6,6 @@ Start the simulation of the Ceres robot in AVZ world
 ros2 launch ceres_gazebo ceres_gazebo_launch.py
 ```
 
-Check if topics 
-
 
 ## SLAM
 
@@ -33,7 +31,10 @@ I created an alias for that in my `.bashrc`.
 
 ## AMCL
 
+First start RViz. Then run
+
 ```console
 ros2 launch ceres_gazebo amcl_avz_launch.py
 ```
 
+I the map is not visible in RViz you need to restart the amcl launch file

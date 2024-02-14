@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- args that can be set from the command line or a default will be used -->
+
+<!-- Shouldnt namespace be set via ns arguments and group tags? TODO check -->
+<arg name="namespace" default="" description="Top-level namespace" />
+<arg name="use_sim_time" default="false" description="Use simulation (Gazebo) clock if true" />
+<arg name="server_params" default="$(find-pkg-share ceres_navigation)/config/nav2_server_params.yaml" description="Full path to the ROS2 parameters file to use for nav2 server nodes" />
+<arg name="bt_params" default="$(find-pkg-share ceres_navigation)/config/nav2_bt_params.yaml" description="Full path to the ROS2 parameters file to use for nav2 behavior tree nodes" />
+<arg name="use_bt" default="true" description="start default behavior tree for RViz navigation"/>
+
+<arg name="use_respawn" default="false" description="Whether to respawn if a node crashes" />
+<arg name="log_level" default="info" description="log level" />
+
+
+
+<include file="$(find-pkg-share ceres_navigation)/launch/nav2_server_launch.py">
+    
+</include>
+
+<group if="$(var use_bt)">
+    <include file="$(find-pkg-share ceres_navigation)/launch/nav2_bt_launch.py">
+        <!-- <arg name="namespace" value="$(var namespace)" />
+        <arg name="use_sim_time" value="$(var use_sim_time)" />
+        <arg name="params_file" value="$(var bt_params)" />
+        <arg name="use_respawn" value="$(var use_respawn)" />
+        <arg name="log_level" value="$(var log_level)" /> -->
+    </include>
+</group>
+
+</launch>

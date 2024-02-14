@@ -5,10 +5,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
 import os
 
-
-
 def generate_launch_description():
-
     is_sim = LaunchConfiguration('is_sim')
     is_sim_arg = DeclareLaunchArgument(
         'is_sim',

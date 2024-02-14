@@ -1,13 +1,9 @@
 from launch import LaunchDescription
 from ament_index_python.packages import get_package_share_directory
-import launch_ros.actions
+from launch_ros.actions import Node
 import os
-import yaml
-from launch.substitutions import EnvironmentVariable, LaunchConfiguration
-import pathlib
-import launch.actions
+from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
-
 
 
 def generate_launch_description():
@@ -19,11 +15,11 @@ def generate_launch_description():
     
     return LaunchDescription([
         is_sim_arg,
-        launch_ros.actions.Node(
+        Node(
             package='robot_localization',
             executable='ekf_node',
             name='ekf_filter_node',
             output='screen',
-            parameters=[{"use_sim_time" : is_sim},os.path.join(get_package_share_directory("ceres_localization"), 'cfg', 'ekf.yaml')],
+            parameters=[{"use_sim_time" : is_sim},os.path.join(get_package_share_directory("ceres_localization"), 'config', 'ekf.yaml')],
            ),
         ])

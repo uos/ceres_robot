@@ -48,7 +48,7 @@ def generate_launch_description():
 
     ekf = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'ceres_localization_launch2.py')
+                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_localization_launch.py')
             ),
             launch_arguments={
                 'is_sim': 'false',

@@ -1,0 +1,14 @@
+<CycloneDDS>
+   <Domain id="any">
+       <General>
+            <AllowMulticast>spdp</AllowMulticast>
+            <Interfaces>
+                <NetworkInterface name="wlp3s0" />
+                <!-- <NetworkInterface address="131.173.210.238" /> -->
+            </Interfaces>
+        </General>
+        <Compatibility>
+            <ManySocketsMode>many</ManySocketsMode>
+        </Compatibility>
+   </Domain>
+</CycloneDDS>

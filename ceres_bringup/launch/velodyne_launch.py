@@ -52,7 +52,7 @@ def generate_launch_description():
                     plugin='velodyne_laserscan::VelodyneLaserScan',
                     name='velodyne_laserscan_node',
                     parameters=[params_velo_laser],
-                    remappings=[('/scan', '/velodyne/scan')]),
+                    remappings=[('/scan', '/velodyne/scan'), ('/velodyne_points', '/velodyne/points')]),
             ],
             output='both',
     )

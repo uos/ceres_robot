@@ -5,9 +5,10 @@ controller_server:
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
-    progress_checker_plugin: "progress_checker"
+    progress_checker_plugins: ["progress_checker"]
     goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
     controller_plugins: ["FollowPath"]
+    use_realtime_priority: false
 
     # Progress checker parameters
     progress_checker:
@@ -31,20 +32,20 @@ controller_server:
       debug_trajectory_details: True
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 1.5
+      max_vel_x: 0.26
       max_vel_y: 0.0
-      max_vel_theta: 2.0
+      max_vel_theta: 1.0
       min_speed_xy: 0.0
-      max_speed_xy: 1.5
+      max_speed_xy: 0.26
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 1.0
+      acc_lim_x: 2.5
       acc_lim_y: 0.0
-      acc_lim_theta: 0.5
-      decel_lim_x: -1.0
+      acc_lim_theta: 3.2
+      decel_lim_x: -2.5
       decel_lim_y: 0.0
-      decel_lim_theta: -1.2
+      decel_lim_theta: -3.2
       vx_samples: 20
       vy_samples: 5
       vtheta_samples: 20
@@ -96,7 +97,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /velodyne/multi_scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -126,7 +127,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /velodyne/multi_scan
           max_obstacle_height: 1.2
           clearing: True
           marking: True

@@ -3,7 +3,7 @@
 
 <include file="$(find-pkg-share ceres_localization)/launch/amcl_launch.py">
     <arg name="map" value="$(find-pkg-share uos_maps)/maps/cic.yaml" />
-    <arg name="use_sim_time" value="True" />
+    <arg name="use_sim_time" value="False" />
 </include>
 
 </launch>

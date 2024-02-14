@@ -19,6 +19,7 @@ def generate_launch_description():
     param_config = os.path.join(config_directory, 'VLP16-velodyne-params.yaml')
     param_config_pcd = os.path.join(config_directory, 'VLP16-trans-params.yaml')
     param_config_laser = os.path.join(config_directory, 'VLP16-velodyne_laserscan_node-params.yaml')
+    param_config_pcd2scan = os.path.join(config_directory, 'pcd2scan.yaml')
 
     share_dir_velo_pcd = ament_index_python.packages.get_package_share_directory('velodyne_pointcloud')
 
@@ -31,6 +32,9 @@ def generate_launch_description():
         params_velo_pcd['calibration'] = os.path.join(share_dir_velo_pcd, 'params', 'VLP16db.yaml')
     with open(param_config_laser, 'r') as f:
         params_velo_laser = yaml.safe_load(f)['velodyne_laserscan_node']['ros__parameters']
+    with open(param_config_pcd2scan, 'r') as f:
+         params_velo_pcs2scan = yaml.safe_load(f)['pcd2scan']['ros__parameters']
+
     container = ComposableNodeContainer(
             name='velodyne_driver_container',
             namespace='',
@@ -60,22 +64,9 @@ def generate_launch_description():
 
     laser2pcd = Node(
             package='pointcloud_to_laserscan', executable='pointcloud_to_laserscan_node',
-            remappings=[('cloud_in', [LaunchConfiguration(variable_name='scanner'), '/velodyne/points']),
-                        ('scan', [LaunchConfiguration(variable_name='scanner'), '/velodyne/multi_scan'])],
-            parameters=[{
-                'target_frame' : 'base_footprint',
-                'transform_tolerance': 0.01,
-                'min_height': 0.1,
-                'max_height': 1.0,
-                'angle_min': -1.5708,  # -M_PI/2
-                'angle_max': 1.5708,  # M_PI/2
-                'angle_increment': 0.0087,  # M_PI/360.0
-                'scan_time': 0.3333,
-                'range_min': 0.45,
-                'range_max': 40.0,
-                'use_inf': True,
-                'inf_epsilon': 1.0
-            }],
+            remappings=[('cloud_in', '/velodyne/points'),
+                        ('scan', '/velodyne/multi_scan')],
+            parameters=[params_velo_pcs2scan],
             name='pointcloud_to_laserscan'
         )
 

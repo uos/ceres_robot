@@ -11,6 +11,9 @@ import os
 ARGUMENTS = [
     DeclareLaunchArgument('world_path', default_value='',
                           description='The world path, by default is empty.world'),
+    DeclareLaunchArgument(
+        'log_level', default_value='debug',
+        description='log level')
 ]
 
 def generate_launch_description():
@@ -19,6 +22,8 @@ def generate_launch_description():
     # Launch args
     world_path = LaunchConfiguration('world_path')
     prefix = LaunchConfiguration('prefix')
+    log_level = LaunchConfiguration('log_level')
+
 
     # Needed for gazebo to find models
     model_path, plugin_path, media_path = GazeboRosPaths.get_paths()
@@ -85,6 +90,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    imufilter = Node(
+            package='imu_filter_madgwick',
+            executable='imu_filter_madgwick_node',
+            name='imu_filter',
+            output='screen',
+            parameters=[os.path.join(config_dir, 'madgwick.yaml')],
+        )
 
     ekf = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -95,13 +107,16 @@ def generate_launch_description():
             }.items()
         )
     
-    imufilter = Node(
-            package='imu_filter_madgwick',
-            executable='imu_filter_madgwick_node',
-            name='imu_filter',
-            output='screen',
-            parameters=[os.path.join(config_dir, 'madgwick.yaml')],
-        )
+    # amcl = IncludeLaunchDescription(
+    #         PythonLaunchDescriptionSource(
+    #             os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'amcl_launch.py')
+    #         ),
+    #         launch_arguments={
+    #             'use_sim_time': 'true'
+    #             'map': os.path.join(get_package_share_directory('uos_maps'), 'maps', 'avz.yaml')
+    #         }.items()
+    #     )
+
     
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(node_robot_state_publisher)
@@ -109,5 +124,6 @@ def generate_launch_description():
     ld.add_action(spawn_robot)
     ld.add_action(imufilter)
     ld.add_action(ekf)
+    # ld.add_action(amcl)
 
     return ld

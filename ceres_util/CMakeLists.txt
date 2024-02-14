@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 ament_environment_hooks(env_hooks/iamceres.sh.in)
 
-install(DIRECTORY config
+install(DIRECTORY config rviz launch
   DESTINATION share/${PROJECT_NAME}
 )
 

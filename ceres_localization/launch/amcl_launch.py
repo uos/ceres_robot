@@ -127,7 +127,6 @@ def generate_launch_description():
                             {'autostart': autostart},
                             {'node_names': ['map_server', 'amcl']}])
 
-
     # Create the launch description and populate
     ld = LaunchDescription()
 

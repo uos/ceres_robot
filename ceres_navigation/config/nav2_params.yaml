@@ -39,10 +39,10 @@ controller_server:
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 1.5
+      acc_lim_x: 1.0
       acc_lim_y: 0.0
-      acc_lim_theta: 1.2
-      decel_lim_x: -1.5
+      acc_lim_theta: 0.5
+      decel_lim_x: -1.0
       decel_lim_y: 0.0
       decel_lim_theta: -1.2
       vx_samples: 20
@@ -202,9 +202,9 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [0.5, 0.0, 1.0]
+    max_velocity: [2, 0.0, 2]
     min_velocity: [0.0, 0.0, -1.0]
-    max_accel: [1.5, 0.0, 1.2]
+    max_accel: [0.5, 0.0, 0.5]
     max_decel: [-1.5, 0.0, -1.2]
     odom_topic: "odom"
     odom_duration: 0.1

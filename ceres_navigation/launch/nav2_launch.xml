@@ -16,16 +16,12 @@
 
 
 <include file="$(find-pkg-share ceres_navigation)/launch/nav2_server_launch.py">
-    
+    <arg name="params_file" value="$(var server_params)" />
 </include>
 
 <group if="$(var use_bt)">
     <include file="$(find-pkg-share ceres_navigation)/launch/nav2_bt_launch.py">
-        <!-- <arg name="namespace" value="$(var namespace)" />
-        <arg name="use_sim_time" value="$(var use_sim_time)" />
         <arg name="params_file" value="$(var bt_params)" />
-        <arg name="use_respawn" value="$(var use_respawn)" />
-        <arg name="log_level" value="$(var log_level)" /> -->
     </include>
 </group>
 

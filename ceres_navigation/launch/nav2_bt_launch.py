@@ -74,7 +74,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'config', 'nav2_params.yaml'),
+        default_value=os.path.join(bringup_dir, 'config', 'nav2_bt_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -97,70 +97,11 @@ def generate_launch_description():
         'log_level', default_value='info',
         description='log level')
 
-
-    # compute global pathes
-    nav2_planner = Node(
-                package='nav2_planner',
-                executable='planner_server',
-                name='planner_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings)
-
-    # for smoothing the computed pathes
-    nav2_smoother = Node(
-                package='nav2_smoother',
-                executable='smoother_server',
-                name='smoother_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings)
-
-    # follow computed pathes
-    nav2_controller = Node(
-                package='nav2_controller',
-                executable='controller_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')])
-    
-    # recovery beahaviors if the robot is stuck
-    nav2_behaviors = Node(
-                package='nav2_behaviors',
-                executable='behavior_server',
-                name='behavior_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings)
-    
-    nav2_velocity_smoother = Node(
-                package='nav2_velocity_smoother',
-                executable='velocity_smoother',
-                name='velocity_smoother',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings +
-                        [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')])
-    
-    nav2_waypoint_follower = Node(
-                package='nav2_waypoint_follower',
-                executable='waypoint_follower',
-                name='waypoint_follower',
+    # TODO: put the following things into own launch file
+    nav2_bt_navigator = Node(
+                package='nav2_bt_navigator',
+                executable='bt_navigator',
+                name='bt_navigator',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
@@ -171,17 +112,12 @@ def generate_launch_description():
     nav2_lifecycle_manager = Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
-                name='lifecycle_manager_navigation',
+                name='lifecycle_manager_bt',
                 output='screen',
                 arguments=['--ros-args', '--log-level', log_level],
                 parameters=[{'use_sim_time': use_sim_time},
                             {'autostart': autostart},
-                            {'node_names': ['controller_server',
-                                            'smoother_server',
-                                            'planner_server',
-                                            'behavior_server',
-                                            'waypoint_follower',
-                                            'velocity_smoother']}])
+                            {'node_names': ['bt_navigator']}])
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -199,13 +135,8 @@ def generate_launch_description():
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
 
-    # Add the actions to launch all of the navigation nodes
-    ld.add_action(nav2_planner)
-    ld.add_action(nav2_smoother)
-    ld.add_action(nav2_controller)
-    ld.add_action(nav2_behaviors)
-    ld.add_action(nav2_velocity_smoother)
-    ld.add_action(nav2_waypoint_follower)
+    ld.add_action(nav2_bt_navigator)
     ld.add_action(nav2_lifecycle_manager)
+
 
     return ld

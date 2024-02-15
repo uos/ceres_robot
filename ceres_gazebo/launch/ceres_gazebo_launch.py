@@ -116,7 +116,6 @@ def generate_launch_description():
     #             'map': os.path.join(get_package_share_directory('uos_maps'), 'maps', 'avz.yaml')
     #         }.items()
     #     )
-
     
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(node_robot_state_publisher)

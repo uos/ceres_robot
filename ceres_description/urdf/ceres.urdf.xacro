@@ -122,8 +122,8 @@
   <joint name="imu_to_base_joint" type="fixed">
     <parent link="base_link" />
     <child link="imu" />
-    <!-- <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${M_PI} 0 ${M_PI/2.0}" /> -->
-    <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="0 0 0" />
+    <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${M_PI} 0 ${M_PI/2.0}" />
+    <!-- <origin xyz=" ${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="0 0 0" /> -->
   </joint>
   
   <!-- inertial measurement unit for gazebo -->

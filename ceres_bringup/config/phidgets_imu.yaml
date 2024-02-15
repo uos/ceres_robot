@@ -1,0 +1,12 @@
+phidgets_spatial:
+  ros__parameters:
+    frame_id: imu
+    use_orientation: false
+    spatial_algorithm: 'ahrs'
+    ahrs_angular_velocity_threshold: 1.0
+    ahrs_angular_velocity_delta_threshold: 0.1
+    ahrs_acceleration_threshold: 0.1
+    ahrs_mag_time: 10.0
+    ahrs_accel_time: 10.0
+    ahrs_bias_time: 1.25
+    heating_enabled: false

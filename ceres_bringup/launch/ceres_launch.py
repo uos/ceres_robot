@@ -3,7 +3,8 @@ from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, RegisterEventHandler,IncludeLaunchDescription
 from launch.event_handlers import OnProcessExit, OnExecutionComplete
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-from launch_ros.actions import Node
+from launch_ros.actions import Node, ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
 from launch_ros.substitutions import FindPackageShare
 from scripts import GazeboRosPaths
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -67,13 +68,29 @@ def generate_launch_description():
             }.items()
         )
     
-    phidgets_imu = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('phidgets_spatial'), 'launch', 'spatial-launch.py')
-            ),
-            launch_arguments={
-                'is_sim': 'false',
-            }.items()
+    #phidgets_imu = IncludeLaunchDescription(
+    #        PythonLaunchDescriptionSource(
+    #            os.path.join(get_package_share_directory('phidgets_spatial'), 'launch', 'spatial-launch.py')
+    #        ),
+    #        launch_arguments={
+    #            'is_sim': 'false',
+    #        }.items()
+    #    )
+
+    
+    phidgets_imu = ComposableNodeContainer(
+            name='phidgets_container',
+            namespace='',
+            package='rclcpp_components',
+            executable='component_container',
+            composable_node_descriptions=[
+                ComposableNode(
+                    package='phidgets_spatial',
+                    plugin='phidgets::SpatialRosI',
+                    name='phidgets_spatial',
+                    parameters=[os.path.join(config_dir, 'phidgets_imu.yaml')]),
+            ],
+            output='both',
         )
     
     vlp16 = IncludeLaunchDescription(

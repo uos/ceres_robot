@@ -2,11 +2,11 @@ pcd2scan:
   ros__parameters:
     target_frame: base_footprint
     transform_tolerance: 0.11
-    min_height: 0.1
+    min_height: 0.15
     max_height: 1.0
     angle_min: -3.141
     angle_max: 3.141
-    angle_increment: 0.001
+    angle_increment: 0.008
     scan_time: 0.05
     range_min: 0.1
     range_max: 40.0

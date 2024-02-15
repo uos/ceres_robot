@@ -7,11 +7,11 @@ amcl:
     global_frame_id: "map"
     scan_topic: scan
 
-    alpha1: 0.01 # rotational noise while rotating
-    alpha2: 0.001 # rotational noise while translating
-    alpha3: 0.01 # translational noise while translating
-    alpha4: 0.002 # translational noise while rotating
-    alpha5: 0.01 # translational related noise param. only used for odom_model_type=omni
+    alpha1: 0.02 # rotational noise while rotating
+    alpha2: 0.002 # rotational noise while translating
+    alpha3: 0.02 # translational noise while translating
+    alpha4: 0.004 # translational noise while rotating
+    alpha5: 0.02 # translational related noise param. only used for odom_model_type=omni
     
     beam_skip_distance: 0.5
     beam_skip_error_threshold: 0.9

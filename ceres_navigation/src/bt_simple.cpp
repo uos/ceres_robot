@@ -77,6 +77,7 @@ public:
         blackboard_->set<std::chrono::milliseconds>("server_timeout", 10ms);
         blackboard_->set<std::chrono::milliseconds>("bt_loop_duration", bt_loop_duration_);
         
+        // TODO: Logger
 
         auto xml_string = load_behavior_tree_string_from_file(bt_file_);
         

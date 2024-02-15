@@ -47,23 +47,23 @@ def generate_launch_description():
             "publish_frequency": 100.0}, robot_description],
     )
 
-    #ekf = IncludeLaunchDescription(
-    #        PythonLaunchDescriptionSource(
-    #            os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_localization_launch.py')
-    #        ),
-    #        launch_arguments={
-    #            'is_sim': 'false'
-    #        }.items()
-    #    )
-    
     ekf = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_pose_ekf_launch.py')
+                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_localization_launch.py')
             ),
             launch_arguments={
                 'is_sim': 'false'
             }.items()
         )
+    
+    #ekf = IncludeLaunchDescription(
+    #        PythonLaunchDescriptionSource(
+    #            os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_pose_ekf_launch.py')
+    #        ),
+    #        launch_arguments={
+    #            'is_sim': 'false'
+    #        }.items()
+    #    )
     
     volksbot_driver = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -76,16 +76,6 @@ def generate_launch_description():
                 'axis_length' : "0.435"
             }.items()
         )
-    
-    #phidgets_imu = IncludeLaunchDescription(
-    #        PythonLaunchDescriptionSource(
-    #            os.path.join(get_package_share_directory('phidgets_spatial'), 'launch', 'spatial-launch.py')
-    #        ),
-    #        launch_arguments={
-    #            'is_sim': 'false',
-    #        }.items()
-    #    )
-
     
     phidgets_imu = ComposableNodeContainer(
             name='phidgets_container',

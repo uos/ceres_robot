@@ -31,7 +31,7 @@ ekf_filter_node:
                        false, false, false, # rpy
                        false, false, false, #vxyz
                        true, true, true, #vrpy
-                       true, true, true] #axyz 
+                       false, false, false] #axyz 
         imu0_differential: false
 
         use_control: false

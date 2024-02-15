@@ -432,3 +432,56 @@ velocity_smoother:
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
+
+collision_monitor:
+  ros__parameters:
+    use_sim_time: True
+    base_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    transform_tolerance: 0.5
+    source_timeout: 5.0
+    stop_pub_timeout: 2.0
+    enable_stamped_cmd_vel: False
+    polygons: ["VelocityPolygonStop"]
+    VelocityPolygonStop:
+      type: "velocity_polygon"
+      action_type: "stop"
+      min_points: 2
+      visualize: True
+      enabled: True
+      polygon_pub_topic: "velocity_polygon_stop"
+      velocity_polygons: ["rotation", "translation_forward", "translation_backward", "stopped"]
+      holonomic: false
+      rotation:
+        points: "[[0.3, 0.3], [0.3, -0.3], [-0.3, -0.3], [-0.3, 0.3]]"
+        linear_min: 0.0
+        linear_max: 0.05
+        theta_min: -1.0
+        theta_max: 1.0
+      translation_forward:
+        points: "[[0.35, 0.3], [0.35, -0.3], [-0.2, -0.3], [-0.2, 0.3]]"
+        linear_min: 0.0
+        linear_max: 1.0
+        theta_min: -1.0
+        theta_max: 1.0
+      translation_backward:
+        points: "[[0.2, 0.3], [0.2, -0.3], [-0.35, -0.3], [-0.35, 0.3]]"
+        linear_min: -1.0
+        linear_max: 0.0
+        theta_min: -1.0
+        theta_max: 1.0
+      # This is the last polygon to be checked, it should cover the entire range of robot's velocities
+      # It is used as the stopped polygon when the robot is not moving and as a fallback if the velocity
+      # is not covered by any of the other sub-polygons
+      stopped:
+        points: "[[0.25, 0.25], [0.25, -0.25], [-0.25, -0.25], [-0.25, 0.25]]"
+        linear_min: -1.0
+        linear_max: 1.0
+        theta_min: -1.0
+        theta_max: 1.0
+    observation_sources: ["scan"]
+    scan:
+      type: "scan"
+      topic: "/scan"

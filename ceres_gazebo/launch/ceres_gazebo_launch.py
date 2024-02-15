@@ -12,7 +12,7 @@ ARGUMENTS = [
     DeclareLaunchArgument('world_path', default_value='',
                           description='The world path, by default is empty.world'),
     DeclareLaunchArgument(
-        'log_level', default_value='debug',
+        'log_level', default_value='info',
         description='log level')
 ]
 

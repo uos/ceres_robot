@@ -17,7 +17,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
                 "log_level",
-                default_value=["debug"],
+                default_value="info",
                 description="Logging level",
         ),
         is_sim_arg,

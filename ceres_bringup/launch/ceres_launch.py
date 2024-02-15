@@ -47,15 +47,21 @@ def generate_launch_description():
             "publish_frequency": 100.0}, robot_description],
     )
 
+    #ekf = IncludeLaunchDescription(
+    #        PythonLaunchDescriptionSource(
+    #            os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_localization_launch.py')
+    #        ),
+    #        launch_arguments={
+    #            'is_sim': 'false'
+    #        }.items()
+    #    )
+    
     ekf = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_localization_launch.py')
+                os.path.join(get_package_share_directory('ceres_localization'), 'launch', 'robot_pose_ekf_launch.py')
             ),
             launch_arguments={
-                'is_sim': 'false',
-                'num_wheels' : "4",
-                'wheel_radius' :"0.135",
-                'axis_length' : "0.435"
+                'is_sim': 'false'
             }.items()
         )
     
@@ -65,6 +71,9 @@ def generate_launch_description():
             ),
             launch_arguments={
                 'is_sim': 'false',
+                'num_wheels' : "4",
+                'wheel_radius' :"0.135",
+                'axis_length' : "0.435"
             }.items()
         )
     

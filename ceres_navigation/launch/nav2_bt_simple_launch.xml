@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="bt_file" default="$(find-pkg-share ceres_navigation)/behavior_trees/nav2_bt_simple.xml" description="path to bt file" />
+<arg name="bt_params" default="$(find-pkg-share ceres_navigation)/config/nav2_bt_simple_params.yaml" description="path to config file" />
+
+<node pkg="ceres_navigation" exec="bt_simple" name="nav2_bt_simple" output="screen">
+    <param name="bt_file" value="$(var bt_file)" />
+    <param from="$(var bt_params)" />
+</node>
+
+</launch>

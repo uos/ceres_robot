@@ -10,7 +10,7 @@
   <xacro:include filename="$(find ceres_description)/urdf/imu.gazebo.urdf.xacro" />
   <xacro:include filename="$(find sick_tim)/urdf/sick_tim.urdf.xacro" />
   <xacro:include filename="$(find ceres_description)/urdf/wheel.urdf.xacro" />
-  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
+  <!-- <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" /> -->
 
   <xacro:property name="M_PI" value="3.14159265359"/>
   
@@ -103,9 +103,9 @@
     <child link="laser_mount_link" />
     <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2 + 0.05}"/>
   </joint>
-  <xacro:VLP-16 topic="/velodyne_points" gpu="true">
+  <!-- <xacro:VLP-16 topic="/velodyne/points" gpu="true">
     <origin xyz="${body_length/2 - 0.05} 0 ${body_height/2}"/>
-  </xacro:VLP-16>
+  </xacro:VLP-16> -->
   
   <link name="imu">
     <visual>

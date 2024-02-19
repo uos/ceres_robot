@@ -24,11 +24,14 @@ from launch_ros.actions import LoadComposableNodes
 from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode, ParameterFile
 from nav2_common.launch import RewrittenYaml
-
+import yaml
 
 def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('ceres_navigation')
+
+
+   
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -46,7 +49,8 @@ def generate_launch_description():
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
-                       'velocity_smoother']
+                       'velocity_smoother',
+                       "collision_monitor"]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -185,6 +189,7 @@ def generate_launch_description():
             Node(
                 package='nav2_collision_monitor',
                 executable='collision_monitor',
+                name='collision_monitor',
                 output='screen',
                 emulate_tty=True,  # https://github.com/ros2/launch/issues/188
                 arguments=['--ros-args', '--log-level', log_level],

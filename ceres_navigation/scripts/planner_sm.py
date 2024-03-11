@@ -70,7 +70,7 @@ class PlannerStateMachine(smach.StateMachine):
         outcomes=['succeeded', 'failure', 'preempted', 'invalid'])
     def get_path_result_cb(self, userdata, status, result):
         if result is None:  # something preempted or aborted this
-            print 'result is None!'
+            print("result is None!")
             return 'aborted'
 
         userdata.message = result.message
@@ -84,10 +84,10 @@ class PlannerStateMachine(smach.StateMachine):
         elif result.outcome in (GetPathResult.INVALID_START, GetPathResult.INVALID_GOAL, GetPathResult.NO_PATH_FOUND, GetPathResult.PAT_EXCEEDED):
             # We will take PAT_EXCEEDED as a failure to get a path. The most planners currently won't give a better feedback, so if it
             # takes too long to find a path, there might be no path.
-            print 'Planning with %s could not get any path %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+            print("Planning with %s could not get any path %s:\n%s" % (self._planner_name, str(result.outcome), result.message))
             return 'invalid'
         else:
-            print 'Planning with %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+            print("Planning with %s terminated with non-success status code %s:\n%s" % (self._planner_name, str(result.outcome), result.message))
             return 'failure'
 
     @cb_interface(input_keys=['path'])
@@ -109,8 +109,8 @@ class PlannerStateMachine(smach.StateMachine):
             elif result.outcome == ExePathResult.CANCELED:
                 return 'preempted'
             else:
-                print 'Execution of %s terminated with non-success status code %s:\n%s' % (self._planner_name, str(result.outcome), result.message)
+                print("Execution of %s terminated with non-success status code %s:\n%s" % (self._planner_name, str(result.outcome), result.message))
                 return 'failure'
         else:
-            print 'No result, received status: %s' % status
+            print("No result, received status: %s" % status)
             return 'failure'

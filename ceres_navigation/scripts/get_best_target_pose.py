@@ -62,7 +62,7 @@ class GetBestTargetPose(smach.Concurrence):
         if self._best_pose is None:
             return 'failure'
 
-        print 'Min path length: ', self._min_path_length
+        print("Min path length: ", self._min_path_length)
         return 'succeeded'
 
     def get_path_goal_cb(self, index):
@@ -104,6 +104,6 @@ class GetBestTargetPose(smach.Concurrence):
             elif result.outcome == GetPathResult.CANCELED:
                 return 'preempted'
             else:
-                print 'Planning with GlobalPlanner terminated with non-success status code %s:\n%s' % (str(result.outcome), result.message)
+                print("Planning with GlobalPlanner terminated with non-success status code %s:\n%s" % (str(result.outcome), result.message))
                 return 'failure'
         return __cb

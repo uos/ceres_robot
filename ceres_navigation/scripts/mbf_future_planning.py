@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import smach
 import smach_ros
@@ -85,7 +85,7 @@ class MBFFuturePlanning(smach.StateMachine):
     def recovery_goal_cb(self, userdata, goal):
         # TODO implement a more clever way to call the right behavior. Currently cycles through all behaviors
         behavior = self._recovery_behaviors[userdata.recovery_behavior_index]
-        print 'RECOVERY BEHAVIOR:', behavior
+        print("RECOVERY BEHAVIOR:", behavior)
         goal.behavior = behavior
         userdata.recovery_behavior_index += 1
         if userdata.recovery_behavior_index >= len(self._recovery_behaviors):
@@ -93,7 +93,7 @@ class MBFFuturePlanning(smach.StateMachine):
 
     @cb_interface(output_keys=['outcome', 'message'], outcomes=['succeeded', 'failure'])
     def recovery_result_cb(self, userdata, status, result):
-        print result.outcome
+        print("result.outcome")
         # TODO: preempted and aborted
         if result.outcome == RecoveryResult.SUCCESS:
             return 'succeeded'
@@ -123,7 +123,7 @@ class MBFFuturePlanning(smach.StateMachine):
         elif result.outcome == GetPathResult.CANCELED:
             return 'preempted'
         else:
-            print 'Planning with GlobalPlanner terminated with non-success status code %s:\n%s' % (str(result.outcome), result.message)
+            print("Planning with GlobalPlanner terminated with non-success status code %s:\n%s" % (str(result.outcome), result.message))
             return 'failure'
 
 

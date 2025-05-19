@@ -30,9 +30,6 @@ def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('ceres_navigation')
 
-
-   
-
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')

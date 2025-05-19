@@ -14,18 +14,7 @@ find_package(nav2_behavior_tree REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(navigation2 REQUIRED)
 
-add_executable(bt_simple src/bt_simple.cpp)
-ament_target_dependencies(bt_simple 
-  rclcpp 
-  nav2_behavior_tree 
-  nav2_util
-)
-
-install(TARGETS
-  bt_simple
-  DESTINATION lib/${PROJECT_NAME})
-
-install(DIRECTORY launch config behavior_trees
+install(DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 
